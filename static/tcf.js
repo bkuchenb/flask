@@ -318,7 +318,12 @@ function display_result(response){
 	var temp_p = document.createElement('p');
 	temp_p.id = 'p' + current_record;
 	temp_p.className = 'card_name';
-	temp_p.innerHTML = 'Card ' + current_record + ' of ' + total_records;
+	if(response.hasOwnProperty('error')){
+		temp_p.innerHTML = response.error;
+	}
+	else{
+		temp_p.innerHTML = 'Card ' + current_record + ' of ' + total_records;
+	}
 	// Get the first p element.
 	var top = document.getElementById('p' + (current_record - 1));
 	c3_R_r1.insertBefore(temp_p, top);

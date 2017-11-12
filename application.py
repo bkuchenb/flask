@@ -74,7 +74,11 @@ def search_for_record() -> 'json':
         # Request and save the inventory_url page.
         soup = tcf.get_soup(entry['inventory_url'])
         # Get more information for the card.
-        entry = tcf.get_card_data(soup, entry)
+        try:
+            entry = tcf.get_card_data(soup, entry)
+        except ValueError as err:
+            print('Something went wrong: {}'.format(err))
+            return jsonify({'error': 'Currency is not set to USD.'})
         # Check to see if the card has been added to tcf_inventory.
         _SQL = ("SELECT inventory_id "
                 "FROM tcf_inventory "
