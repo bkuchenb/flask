@@ -461,6 +461,6 @@ def get_soup(url: str) -> 'BeautifulSoup':
         # Save the content.
         c = r.content
         # Parse the content.
-        return BeautifulSoup(c, 'lxml')
+        return BeautifulSoup(c, 'html.parser')
     except requests.Timeout as err:
         print('Something went wrong: {}'.format(err))

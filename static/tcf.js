@@ -60,7 +60,7 @@ function cL_btn_page(btn_temp){
 		event.preventDefault();
 		// Save the page number.
 		page = btn_temp.innerHTML;
-		current_record = (parseInt(page) * 100) + 1;
+		current_record = (parseInt(page) * 100) - 99;
 		document.body.style.cursor = 'wait';
 		search_for_page(page);
 		btn_temp.className += ' btn_hidden';
