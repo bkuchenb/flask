@@ -5,6 +5,7 @@ Created on Fri Nov 10 12:47:48 2017
 @author: bk00chenb
 """
 
+import math
 import re
 import requests
 from bs4 import BeautifulSoup
@@ -332,6 +333,11 @@ def get_card_id(card_data: dict) -> dict:
         temp_list = card_data['set_url'].split('set_id=')
         temp_list = temp_list[1].split('&')
         card_data['set_id'] = temp_list[0]
+        # Save the total number of cards in the set.
+        total_cards = int(a_list[0].text.strip())
+        # Calculate the max number of pages to search.
+        page_end = math.ceil(total_cards/25)
+#        print('This set has', total_cards, 'cards.')
 #        print(card_data['set_id'])
         # Request the set page.
         soup = get_soup(a_list[0]['href'])
@@ -340,10 +346,10 @@ def get_card_id(card_data: dict) -> dict:
                     card_data['temp_set_name'].replace(' ', '-').lower() +
                     '/' + card_data['temp_card_number'].lower() + '-')
         temp_list = []
-        while len(temp_list) == 0 and page_num < 101:
+        while len(temp_list) == 0 and page_num < page_end:
             # Find the link with the card_id.
             temp_list = soup.find_all(href=re.compile(temp_str))
-#           print(temp_str)
+#            print(temp_str)
 #           print(len(temp_list), 'matches were found for the card')
             # If found, save the card_url and card_id.
             if len(temp_list) == 1:
@@ -418,6 +424,7 @@ def get_inventory_ids(soup: 'BeautifulSoup') -> list:
             temp_str = temp_str.replace('\'', '')
             temp_str = temp_str.replace('.', '')
             temp_str = temp_str.replace(':', '')
+            temp_str = temp_str.replace('\'', '')
             card_data['temp_set_name'] = temp_str.replace('/', '')
             temp_list3 = temp_list[1].split(' ')
             card_data['temp_card_number'] = temp_list3[0]

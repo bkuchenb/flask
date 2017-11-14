@@ -104,6 +104,7 @@ def search_for_record() -> 'json':
                 _SQL = ("INSERT INTO tcf_exception(card_data) "
                         "VALUES(%s)")
                 cursor.execute(_SQL, (entry['card_name'],))
+                return jsonify({'error': 'Could not find card.'})
             # Get more information from the card_url.
             soup = tcf.get_soup(entry['card_url'])
             entry = tcf.get_card_data2(soup, entry)
