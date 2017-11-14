@@ -417,6 +417,7 @@ def get_inventory_ids(soup: 'BeautifulSoup') -> list:
             # Remove any special characters from the temp_set_name.
             temp_str = temp_str.replace('\'', '')
             temp_str = temp_str.replace('.', '')
+            temp_str = temp_str.replace(':', '')
             card_data['temp_set_name'] = temp_str.replace('/', '')
             temp_list3 = temp_list[1].split(' ')
             card_data['temp_card_number'] = temp_list3[0]

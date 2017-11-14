@@ -1,6 +1,6 @@
 // Global variables.
 //var home = 'http://localhost/inceff/tcf/index.php';
-var home = 'http://www.increase-efficiency.net/tcf/index.php';
+var home = 'http://flask-env.picmpn3pqu.us-west-2.elasticbeanstalk.com/';
 var sport = '';
 var year = '';
 var letter = '';
@@ -9,8 +9,8 @@ var mode = '';
 var row_num = 0;
 var total_records = 0;
 var current_record = 1;
-// Make the logo reset the web page when clicked.
-document.getElementById('btn_logo').addEventListener('click', function(event){
+// Make the logo_button reset the web page when clicked.
+document.getElementById('logo__button').addEventListener('click', function(event){
 	event.preventDefault();
 	window.location.href = home;
 }, false);
@@ -148,7 +148,7 @@ function cr_btns_page(temp_obj){
 	var navbar = document.getElementById('navbar');
 	navbar.innerHTML = '';
 	navbar.innerHTML = 'There are ' + total_records + ' records for ' + year + '.';
-	navbar.className = 'navbar_message';
+	navbar.className = 'navbar_default';
 	var c3_C_r2 = document.getElementById('c3_C_r2');
 	// Remove the loader.
 	c3_C_r2.innerHTML = '';
