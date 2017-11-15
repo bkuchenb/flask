@@ -22,6 +22,7 @@ function cL_btn_inventory(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
 		// Clear the buttons and card number display area.
+		document.getElementById('c3_C_r1').innerHTML = '';
 		document.getElementById('c3_C_r2').innerHTML = '';
 		document.getElementById('c3_R_r1').innerHTML = '';
 		// Reset the current_record global.
@@ -148,7 +149,6 @@ function cr_btns_page(temp_obj){
 	var navbar = document.getElementById('navbar');
 	navbar.innerHTML = '';
 	navbar.innerHTML = 'There are ' + total_records + ' records for ' + year + '.';
-	navbar.className = 'navbar_default';
 	var c3_C_r2 = document.getElementById('c3_C_r2');
 	// Remove the loader.
 	c3_C_r2.innerHTML = '';

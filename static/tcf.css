@@ -58,24 +58,17 @@ html{
 		width: 20%;
 	}
 
-.navbar_{
+.navbar{
 	/*Create a green background darker than the page background.*/
 	background-color: #5cd65c;
 	border-bottom: 0.0625em solid black;
 	border-top: 0.0625em solid black;
+	height: 2.5em;
 	margin: 0.3125em 0.3125em 0.3125em 0;
-	position: relative;
+	padding: 0.0625em;
 	text-align: center;
-    width: 100%;
+	width: 100%;
 }
-
-	.navbar_default{
-		height: 2.5em;
-		margin: auto;
-		padding: 0.625em;
-		text-align: center;
-		width: 60%;
-	}
 
 .body{
 	margin: 0;
@@ -104,7 +97,8 @@ html{
 .c3_R_default{
 	display: inline-block;
 	margin: auto;
-	height: 20em;
+	height: 23.75em;
+	overflow-y: scroll;
 	position: absolute;
 	right: 0;
 	width: 19.75%;
@@ -156,9 +150,6 @@ html{
 		height: 26.25em;
 		overflow: scroll;
 	}
-}
-.navbar_default{
-	padding: 0.0625em;
 }
 .navbar_li{
 	display: inline;
