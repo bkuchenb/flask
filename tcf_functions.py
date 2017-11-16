@@ -106,9 +106,9 @@ def insert_manufacturer(cursor: 'cursor', card_data: dict, index: int) -> str:
     _SQL = ("INSERT INTO tcf_manufacturer"
             "(manufacturer_id, manufacturer_name, manufacturer_url) "
             "VALUES(%s, %s, %s)")
-    cursor.execute(_SQL, (card_data['manufacturer_id']['index'],
-                          card_data['manufacturer_name']['index'],
-                          card_data['manufacturer_url']['index'],))
+    cursor.execute(_SQL, (card_data['manufacturer_id'][index],
+                          card_data['manufacturer_name'][index],
+                          card_data['manufacturer_url'][index],))
 
 
 def insert_player(cursor: 'cursor', card_data: dict, index: int) -> str:
@@ -120,9 +120,9 @@ def insert_player(cursor: 'cursor', card_data: dict, index: int) -> str:
         return
     _SQL = ("INSERT INTO tcf_player(player_id, player_name, player_url) "
             "VALUES(%s, %s, %s)")
-    cursor.execute(_SQL, (card_data['player_id']['index'],
-                          card_data['player_name']['index'],
-                          card_data['player_url']['index'],))
+    cursor.execute(_SQL, (card_data['player_id'][index],
+                          card_data['player_name'][index],
+                          card_data['player_url'][index],))
 
 
 def insert_set(cursor: 'cursor', card_data: dict) -> str:
@@ -139,11 +139,11 @@ def insert_set(cursor: 'cursor', card_data: dict) -> str:
     # If there is no manufacturer, remove the variables from insert.
     if len(card_data['manufacturer_id']) < 1:
         _SQL = _SQL.replace('manufacturer_id, ', '')
-        _SQL = _SQL.replace('{manufacturer_id[0]}, ', '')
+        _SQL = _SQL.replace('%s', '', 1)
     # If there is no brand, remove the variables from insert.
     if len(card_data['brand_id']) < 1:
         _SQL = _SQL.replace('brand_id, ', '')
-        _SQL = _SQL.replace('{brand_id[0]}, ', '')
+        _SQL = _SQL.replace('%s', '', 1)
     cursor.execute(_SQL, (card_data['set_id'], card_data['set_year'],
                           card_data['set_name'],
                           card_data['manufacturer_id'][0],
@@ -166,16 +166,16 @@ def insert_team(cursor: 'cursor', card_data: dict, index: int) -> str:
         return
     _SQL = ("INSERT INTO tcf_team(team_id, team_name, team_url) "
             "VALUES(%s, %s, %s)")
-    cursor.execute(_SQL, (card_data['team_id']['index'],
-                          card_data['team_name']['index'],
-                          card_data['team_url']['index'],))
+    cursor.execute(_SQL, (card_data['team_id'][index],
+                          card_data['team_name'][index],
+                          card_data['team_url'][index],))
 
 
 def select_attribute(cursor: 'cursor', card_data: dict, index: int) -> str:
     _SQL = ("SELECT attribute_id "
             "FROM tcf_attribute "
             "WHERE attribute_name = %s")
-    cursor.execute(_SQL, (card_data['attribute_name']['index'],))
+    cursor.execute(_SQL, (card_data['attribute_name'][index],))
     return cursor.fetchall()
 
 
@@ -387,7 +387,7 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
             result = select_attribute(cursor, card_data, index)
             # If the attribute doesn't exist, insert it into tcf_attribute.
             if len(result) == 0:
-                insert_attribute(cursor, card_data, index)
+                insert_attribute(cursor, card_data)
                 # Get the attribute_id just created.
                 result = select_attribute(cursor, card_data, index)
                 card_data['attribute_id'] = result[0][0]
@@ -556,7 +556,7 @@ def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
             card_data['print_run'] = temp_str
     # Get the player_name.
     a_list = card_soup.find_all(href=re.compile('www.beckett.com/player/'))
-    print(len(a_list), 'player links were found.')
+#    print(len(a_list), 'player links were found.')
     for entry in a_list:
         card_data['player_url'].append(entry['href'])
         # Get the official player_name.
@@ -590,6 +590,7 @@ def get_card_id(card_data: dict) -> dict:
         soup = get_soup(url)
         # Find the link with the set_id.
         a_list = soup.find_all(href=re.compile('\?set_id='))
+#        print('len(a_list)', len(a_list))
 #        print('url:', a_list[0]['href'])
         # Save the set_url and set_id.
         card_data['set_url'] = a_list[0]['href']
@@ -612,8 +613,9 @@ def get_card_id(card_data: dict) -> dict:
         while len(temp_list) == 0 and page_num < page_end + 1:
             # Find the link with the card_id.
             temp_list = soup.find_all(href=re.compile(temp_str))
+#            print('len(temp_list)', len(temp_list))
 #            print('Checking page', page_num, 'for', temp_str)
-#           print(len(temp_list), 'matches were found for the card')
+#            print(len(temp_list), 'matches were found for the card')
             # If found, save the card_url and card_id.
             if len(temp_list) == 1:
                 # Save the link.
@@ -685,12 +687,8 @@ def get_inventory_ids(soup: 'BeautifulSoup') -> list:
             card_data['temp_year_name'] = temp_list2[0]
             temp_str = ' '.join(temp_list2[1:]).strip()
             # Remove any special characters from the temp_set_name.
-            temp_str = ''.join(c for c in temp_str if c.isalnum())
-#            temp_str = temp_str.replace('\'', '')
-#            temp_str = temp_str.replace('.', '')
-#            temp_str = temp_str.replace(':', '')
-#            temp_str = temp_str.replace('\'', '')
-#            temp_str = temp_str.replace('\'', '')
+            temp_str = ''.join(c for c in temp_str if c.isalnum() or
+                               c == '-' or c == ' ')
             card_data['temp_set_name'] = temp_str
             temp_list3 = temp_list[1].split(' ')
             card_data['temp_card_number'] = temp_list3[0]

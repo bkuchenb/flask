@@ -7,19 +7,13 @@ html{
 }
 
 .header{
-	margin: 0;
-	padding: 0;
-	position: relative;
-    text-align: center;
-    width: 100%;
+	display: flex;
+	flex-direction: row;
 }
 
 	.contact-info{
-		display: inline-block;
-		left: 0;
-		margin: auto;
-		min-height: 4.5em;
-		position: absolute;
+		height: 8.5em;
+		padding: .5em 0 0 .5em;
 		width: 20%;
 	}
 
@@ -29,32 +23,23 @@ html{
 		}
 
 	.logo{
-		display: inline-block;
-		margin: auto;
-		min-height: 4.5em;
-		padding: 0;
-		position: relative;
+		height: 8.5em;
+		text-align: center;
 		width: 60%;
 	}
 
 		.logo__button{
-			display: block;
-			margin: 0 auto;
 			background-image: url(images/tcf_logo.png);
 			background-color: #bbff99;
 			background-repeat: no-repeat;
 			border-style: none;
 			cursor: pointer;
+			height: 98%;
 			width: 46.75em;
-			height: 10em;
 		}
 
 	.header__right{
-		display: inline-block;
-		margin: auto;
-		min-height: 4.5em;
-		position: absolute;
-		right: 0;
+		height: 8.5em;
 		width: 20%;
 	}
 
@@ -65,7 +50,7 @@ html{
 	border-top: 0.0625em solid black;
 	height: 2.5em;
 	margin: 0.3125em 0.3125em 0.3125em 0;
-	padding: 0.0625em;
+	padding-top: 0.5em;
 	text-align: center;
 	width: 100%;
 }
@@ -79,10 +64,13 @@ html{
 }
 
 	.menu{
+		border: 0.0625em solid black;
 		display: inline-block;
 		margin: auto;
-		height: 20em;
+		height: 23.75em;
 		left: 0;
+		overflow-y: scroll;
+		/* padding: .5em 0 0 .5em; */
 		position: absolute;
 		width: 19.75%;
 	}
@@ -95,10 +83,12 @@ html{
 }
 
 .c3_R_default{
+	border: 0.0625em solid black;
 	display: inline-block;
 	margin: auto;
 	height: 23.75em;
 	overflow-y: scroll;
+	padding: .5em 0 0 .5em;
 	position: absolute;
 	right: 0;
 	width: 19.75%;
@@ -126,7 +116,7 @@ html{
 	border-left: 0.0625em solid black;
 	border-right: 0.0625em solid black;
 	height: 23.75em;
-	overflow: scroll;
+	overflow-y: scroll;
 }
 @media screen and (min-height: 700px){
 	.c3_L_default, .c3_R_default{
@@ -154,20 +144,15 @@ html{
 .navbar_li{
 	display: inline;
 }
-.c3_L_r1{
-	border-top: 0.003125em solid black;
-}
 .c3_L_r1, .c3_L_r2, .c3_L_r3,
 .c3_L_r4, .c3_L_r5, .c3_L_r6,
 .c3_L_r7, .c3_L_r8, .c3_L_r9{
-	border-left: 0.003125em solid black;
-	border-right: 0.003125em solid black;
 	font-size: 1em;
 	padding-left: 0.3125em;
 	padding-top: 0.3125em;
 	text-align: left;
 }
-.c3_L_r5, .c3_L_r6, .c3_L_r9{
+.c3_L_r5, .c3_L_r6{
 	border-bottom: 0.003125em solid black;
 	padding-bottom: 0.3125em;
 }
@@ -237,7 +222,7 @@ html{
     visibility: hidden;
 }
 .c3_L_r_btn{
-	width: 75%;
+	width: 80%;
 }
 .button{
 	-moz-border-radius:5px;
