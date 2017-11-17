@@ -127,27 +127,45 @@ def insert_player(cursor: 'cursor', card_data: dict, index: int) -> str:
 
 def insert_set(cursor: 'cursor', card_data: dict) -> str:
     # Add the set to tcf_set if there is only one manufacturer and one brand.
-    if(len(card_data['manufacturer_id']) > 1 or
-       len(card_data['brand_id']) > 1):
-        print('There is more than 1 manufacturer or brand id.')
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(card_data)
-        return
-    _SQL = ("INSERT INTO tcf_set"
-            "(set_id, set_year, set_name, manufacturer_id, brand_id, set_url) "
-            "VALUES(%s, %s, %s, %s, %s, %s)")
-    # If there is no manufacturer, remove the variables from insert.
-    if len(card_data['manufacturer_id']) < 1:
-        _SQL = _SQL.replace('manufacturer_id, ', '')
-        _SQL = _SQL.replace('%s', '', 1)
-    # If there is no brand, remove the variables from insert.
-    if len(card_data['brand_id']) < 1:
-        _SQL = _SQL.replace('brand_id, ', '')
-        _SQL = _SQL.replace('%s', '', 1)
-    cursor.execute(_SQL, (card_data['set_id'], card_data['set_year'],
-                          card_data['set_name'],
-                          card_data['manufacturer_id'][0],
-                          card_data['brand_id'][0], card_data['set_url'],))
+    if 'manufacturer_id' in card_data and 'brand_id' in card_data:
+        if(len(card_data['manufacturer_id']) > 1 or
+           len(card_data['brand_id']) > 1):
+            print('There is more than 1 manufacturer or brand id.')
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(card_data)
+            return
+        _SQL = ("INSERT INTO tcf_set"
+                "(set_id, set_year, set_name, manufacturer_id, "
+                "brand_id, set_url) "
+                "VALUES(%s, %s, %s, %s, %s, %s)")
+        cursor.execute(_SQL, (card_data['set_id'], card_data['set_year'],
+                              card_data['set_name'],
+                              card_data['manufacturer_id'][0],
+                              card_data['brand_id'][0], card_data['set_url'],))
+    # If there is no manufacturer, remove the variable.
+    elif 'manufacturer_id' not in card_data and 'brand_id' in card_data:
+        _SQL = ("INSERT INTO tcf_set"
+                "(set_id, set_year, set_name, brand_id, set_url) "
+                "VALUES(%s, %s, %s, %s, %s)")
+        cursor.execute(_SQL, (card_data['set_id'], card_data['set_year'],
+                              card_data['set_name'], card_data['brand_id'][0],
+                              card_data['set_url'],))
+    # If there is no brand, remove the variable.
+    elif 'brand_id' not in card_data and 'manufacturer_id' in card_data:
+        _SQL = ("INSERT INTO tcf_set"
+                "(set_id, set_year, set_name, manufacturer_id, set_url) "
+                "VALUES(%s, %s, %s, %s, %s)")
+        cursor.execute(_SQL, (card_data['set_id'], card_data['set_year'],
+                              card_data['set_name'],
+                              card_data['manufacturer_id'][0],
+                              card_data['set_url'],))
+    # If there is no brand and no manufacturer, remove the variables.
+    elif 'brand_id' not in card_data and 'manufacturer_id' in card_data:
+        _SQL = ("INSERT INTO tcf_set"
+                "(set_id, set_year, set_name, manufacturer_id, set_url) "
+                "VALUES(%s, %s, %s, %s)")
+        cursor.execute(_SQL, (card_data['set_id'], card_data['set_year'],
+                              card_data['set_name'], card_data['set_url'],))
 
 
 def insert_set_category(cursor: 'cursor', card_data: dict, index: int) -> str:
@@ -301,56 +319,70 @@ def update_inventory(cursor: 'cursor', card_data: dict) -> str:
 
 def add_card_data(card_data: dict, cursor: 'cursor') -> None:
     try:
+        debugging = False
         # start_time = time.time()
         # Check to see if there is more than 1 brand_id.
-        for index in range(0, len(card_data['brand_id'])):
-            # Check to see if the brand has already been added.
-            result = select_brand(cursor, card_data, index)
-            # If the brand doesn't exist, insert it into tcf_brand.
-            if(len(result) == 0):
-                # Add the item if the number of ids and names matches.
-                if(len(card_data['brand_id']) == len(card_data['brand_name'])):
-                    insert_brand(cursor, card_data, index)
+        if 'brand_id' in card_data:
+            for index in range(0, len(card_data['brand_id'])):
+                # Check to see if the brand has already been added.
+                result = select_brand(cursor, card_data, index)
+                # If the brand doesn't exist, insert it into tcf_brand.
+                if(len(result) == 0):
+                    # Add the item if the number of ids and names matches.
+                    if(len(card_data['brand_id']) ==
+                       len(card_data['brand_name'])):
+                        insert_brand(cursor, card_data, index)
+            if debugging:
+                print('brand')
 
         # Check to see if there is more than 1 manufacturer_id.
-        for index in range(0, len(card_data['manufacturer_id'])):
-            # Check to see if the manufacturer has already been added.
-            result = select_manufacturer(cursor, card_data, index)
-            # If the manufacturer doesn't exist, insert it.
-            if len(result) == 0:
-                insert_manufacturer(cursor, card_data, index)
+        if 'manufacturer_id' in card_data:
+            for index in range(0, len(card_data['manufacturer_id'])):
+                # Check to see if the manufacturer has already been added.
+                result = select_manufacturer(cursor, card_data, index)
+                # If the manufacturer doesn't exist, insert it.
+                if len(result) == 0:
+                    insert_manufacturer(cursor, card_data, index)
+            if debugging:
+                print('manufacturer')
 
         # Check to see if there is more than 1 category_id.
-        for index in range(0, len(card_data['category_id'])):
-            # Check to see if the category has already been added.
-            result = select_category(cursor, card_data, index)
-            # If the category doesn't exist, insert it into tcf_category.
-            if len(result) == 0:
-                insert_category(cursor, card_data, index)
+        if 'category_id' in card_data:
+            for index in range(0, len(card_data['category_id'])):
+                # Check to see if the category has already been added.
+                result = select_category(cursor, card_data, index)
+                # If the category doesn't exist, insert it into tcf_category.
+                if len(result) == 0:
+                    insert_category(cursor, card_data, index)
 
-            # Check to see if the set has already been added.
-            result = select_set(cursor, card_data, index)
-            # If the set doesn't exist, insert it into tcf_set.
-            if len(result) == 0:
-                insert_set(cursor, card_data)
-
-            # Check to see if the set_category has already been added.
-            result = select_set_category(cursor, card_data, index)
-            # If the set_category doesn't exist, insert it.
-            if(len(result) == 0):
-                insert_set_category(cursor, card_data, index)
+                # Check to see if the set has already been added.
+                result = select_set(cursor, card_data, index)
+                # If the set doesn't exist, insert it into tcf_set.
+                if len(result) == 0:
+                    insert_set(cursor, card_data)
+                # Check to see if the set_category has already been added.
+                result = select_set_category(cursor, card_data, index)
+                # If the set_category doesn't exist, insert it.
+                if(len(result) == 0):
+                    insert_set_category(cursor, card_data, index)
+        if debugging:
+            print('category')
 
         # Check to see if the card has already been added to tcf_card.
         result = select_card(cursor, card_data)
         if len(result) == 0:
             # If the card_id doesn't exist, insert it.
             insert_card(cursor, card_data)
+        if debugging:
+            print('card')
 
         # Check to see if the card has already been added to tcf_inventory.
         result = select_inventory(cursor, card_data)
         if len(result) == 0:
             # If the inventory_id doesn't exist, insert it.
             insert_inventory(cursor, card_data)
+        if debugging:
+            print('inventory')
 
         # Check to see if there is more than 1 player_id.
         for index in range(0, len(card_data['player_id'])):
@@ -364,22 +396,27 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
             # If the card_player doesn't exist, insert it.
             if len(result) == 0:
                 insert_card_player(cursor, card_data, index)
+        if debugging:
+            print('player')
 
         # Check to see if there is more than 1 team_id.
-        for index in range(0, len(card_data['team_id'])):
-            # Check to see if the team has already been added.
-            result = select_team(cursor, card_data, index)
-            # If the team doesn't exist, insert it into tcf_team.
-            if len(result) == 0:
-                # Add the team if the number of ids and names matches.
-                if len(card_data['team_id']) == len(card_data['team_name']):
-                    insert_team(cursor, card_data, index)
+        if 'team_id' in card_data:
+            for index in range(0, len(card_data['team_id'])):
+                # Check to see if the team has already been added.
+                result = select_team(cursor, card_data, index)
+                # If the team doesn't exist, insert it into tcf_team.
+                if len(result) == 0:
+                    # Add the team if the number of ids and names matches.
+                    if len(card_data['team_id']) == len(card_data['team_name']):
+                        insert_team(cursor, card_data, index)
 
-            # Check to see if the card_team has already been added.
-            result = select_card_team(cursor, card_data, index)
-            # If the card_team doesn't exist, insert it into tcf_card_team.
-            if len(result) == 0:
-                insert_card_team(cursor, card_data, index)
+                # Check to see if the card_team has already been added.
+                result = select_card_team(cursor, card_data, index)
+                # If the card_team doesn't exist, insert it into tcf_card_team.
+                if len(result) == 0:
+                    insert_card_team(cursor, card_data, index)
+        if debugging:
+            print('team')
 
         # Check to see if there is more than 1 attribute_name.
         for index in range(0, len(card_data['attribute_name'])):
@@ -403,14 +440,20 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
                 # If the card_attribute doesn't exist, insert it.
                 if len(result) == 0:
                     insert_card_attr(cursor, card_data, index)
+            if debugging:
+                print('attribute')
+
 #        print('Sql insert statements took',
 #              round(time.time() - start_time, 2), 'seconds to run.')
     except IndexError as err:
         print('Something went wrong in add_card_data: {}'.format(err))
-        print(card_data['inventory_url'])
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(card_data)
     except MySQLdb.Error as err:
         # If the insert fails, print a message and the query.
         print('Something went wrong in add_card_data: {}'.format(err))
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(card_data)
 
 
 def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
@@ -465,6 +508,8 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                 temp_list = temp_str.split(',')
                 card_data['category_name'] = temp_list
                 a_list = row.find_all('a')
+                card_data['category_url'] = list()
+                card_data['category_id'] = list()
                 for entry in a_list:
                     card_data['category_url'].append(entry['href'])
                     temp_list = entry['href'].split('=')
@@ -476,6 +521,8 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                 temp_list = temp_str.split(',')
                 card_data['team_name'] = temp_list
                 a_list = row.find_all('a')
+                card_data['team_url'] = list()
+                card_data['team_id'] = list()
                 for entry in a_list:
                     card_data['team_url'].append(entry['href'])
                     temp_list = entry['href'].split('=')
@@ -487,6 +534,8 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                 temp_list = temp_str.split(',')
                 card_data['brand_name'] = temp_list
                 a_list = row.find_all('a')
+                card_data['brand_url'] = list()
+                card_data['brand_id'] = list()
                 for entry in a_list:
                     card_data['brand_url'].append(entry['href'])
                     temp_list = entry['href'].split('=')
@@ -498,6 +547,8 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                 temp_list = temp_str.split(',')
                 card_data['manufacturer_name'] = temp_list
                 a_list = row.find_all('a')
+                card_data['manufacturer_url'] = list()
+                card_data['manufacturer_id'] = list()
                 for entry in a_list:
                     card_data['manufacturer_url'].append(entry['href'])
                     temp_list = entry['href'].split('=')
@@ -653,17 +704,8 @@ def get_inventory_ids(soup: 'BeautifulSoup') -> list:
         # For each card, get the card_name, inventory_url, and inventory_id.
         for i in range(0, len(li_list)):
             # Create a dictionary to store return values.
-            card_data = {'brand_id': list(), 'brand_name': list(),
-                         'brand_url': list(),
-                         'category_id': list(), 'category_name': list(),
-                         'category_url': list(),
-                         'manufacturer_id': list(),
-                         'manufacturer_name': list(),
-                         'manufacturer_url': list(),
-                         'player_id': list(), 'player_name': list(),
+            card_data = {'player_id': list(), 'player_name': list(),
                          'player_url': list(),
-                         'team_id': list(), 'team_name': list(),
-                         'team_url': list(),
                          'set_id': '', 'set_year': '', 'set_name': '',
                          'card_id': '', 'card_number': '', 'card_name': '',
                          'value_low': 0, 'value_high': 0,

@@ -22,9 +22,9 @@ function cL_btn_inventory(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
 		// Clear the buttons and card number display area.
-		document.getElementById('c3_C_r1').innerHTML = '';
+		document.getElementById('main__table-header').innerHTML = '';
 		document.getElementById('c3_C_r2').innerHTML = '';
-		document.getElementById('c3_R_r1').innerHTML = '';
+		document.getElementById('feedback').innerHTML = '';
 		// Reset the current_record global.
 		current_record = 1;
 		// Create the year buttons to allow the user to choose the year.
@@ -245,9 +245,9 @@ function cr_btns_year(){
 }
 function cr_layout_tcf(column_names){
 	//Clear the area where two tables will go.
-	var c3_C_r1 = document.getElementById('c3_C_r1');
-	c3_C_r1.innerHTML = '';
-	c3_C_r1.className = 'c3_C_r1_tcf';
+	var header = document.getElementById('main__table-header');
+	header.innerHTML = '';
+	header.className = 'main__table-header main__table-header_border-bottom';
 	var c3_C_r2 = document.getElementById('c3_C_r2');
 	c3_C_r2.innerHTML = '';
 	//Create table1.
@@ -270,7 +270,7 @@ function cr_layout_tcf(column_names){
 	//Add the elements to the layout.
 	temp_div_thead.appendChild(temp_div_tr);
 	temp_div_table.appendChild(temp_div_thead);
-	c3_C_r1.appendChild(temp_div_table);
+	header.appendChild(temp_div_table);
 	
 	//Create table2.
 	var temp_div_table = document.createElement('div');
@@ -313,7 +313,7 @@ function cr_row_tcf(temp_list){
 }
 function display_result(response){
 	// Get the display area.
-	var c3_R_r1 = document.getElementById('c3_R_r1');
+	var feedback = document.getElementById('feedback');
 	// Create a p element and add display the card just added.
 	var temp_p = document.createElement('p');
 	temp_p.id = 'p' + current_record;
@@ -326,7 +326,7 @@ function display_result(response){
 	}
 	// Get the first p element.
 	var top = document.getElementById('p' + (current_record - 1));
-	c3_R_r1.insertBefore(temp_p, top);
+	feedback.insertBefore(temp_p, top);
 	current_record++;
 	if(current_record > total_records || current_record % 100 == 0){
 		// Reset the cursor.
@@ -357,8 +357,8 @@ function search_for_page(pg){
 			//Get the number of pages for the search term.
 			response = JSON.parse(xhttp.responseText);
 			// Clear the display area.
-			var c3_R_r1 = document.getElementById('c3_R_r1');
-			c3_R_r1.innerHTML = '';
+			var feedback = document.getElementById('feedback');
+			feedback.innerHTML = '';
 			// Add each card name to the display area after it's processed.
 			for(var i = 0; i < response.length; i++){
 				search_for_record(response[i]);
