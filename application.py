@@ -69,7 +69,7 @@ def search_for_page() -> 'json':
 @application.route('/search_for_record', methods=['POST'])
 def search_for_record() -> 'json':
     with UseDatabase(application.config['db']) as cursor:
-        # Get the session['records'] index from the POST data.
+        # Get the list of items to search from the json data.
         entry = request.get_json()
         # Request and save the inventory_url page.
         soup = tcf.get_soup(entry['inventory_url'])
@@ -95,26 +95,24 @@ def search_for_record() -> 'json':
             cursor.execute(_SQL, (entry['quantity'],
                                   entry['price'],
                                   entry['inventory_id'],))
-        # If the inventory_id is not found, get the card_id.
-        elif len(result) == 0:
-            # Get the set_id and card_id.
-            entry = tcf.get_card_id(entry)
-            # Move to the next card if the card_url wasn't found.
-            if 'card_url' not in entry:
-                _SQL = ("INSERT INTO tcf_exception(card_data) "
-                        "VALUES(%s)")
-                cursor.execute(_SQL, (entry['card_name'],))
-                return jsonify({'error': 'Could not find card.'})
-            # Get more information from the card_url.
-            soup = tcf.get_soup(entry['card_url'])
-            entry = tcf.get_card_data2(soup, entry)
-            # Add the card_data to the appropriate table.
+
+        # Optional skip if inventory_id was found.
+        # elif len(result) == 0:
+        # Get the set_id and card_id.
+        entry = tcf.get_card_id(entry)
+        # Move to the next card if the card_url wasn't found.
+        if 'card_url' not in entry:
+            _SQL = ("INSERT INTO tcf_exception(card_data) "
+                    "VALUES(%s)")
+            cursor.execute(_SQL, (entry['card_name'],))
+            return jsonify({'error': 'Could not find card.'})
+        # Get more information from the card_url.
+        soup = tcf.get_soup(entry['card_url'])
+        entry = tcf.get_card_data2(soup, entry)
+        # Add the card_data to the appropriate table.
 #                print('Scraping data for Card#', i + 1, 'took',
 #                      round(time.time() - start_time, 2), 'seconds to run.')
-            tcf.add_card_data(entry, cursor)
-        elif len(result) > 1:
-            print('More than one record was found for inventory_id: ' +
-                  entry['inventory_id'] + '.')
+        tcf.add_card_data(entry, cursor)
         return jsonify(entry)
 
 

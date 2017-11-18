@@ -1,5 +1,4 @@
 // Global variables.
-//var home = 'http://localhost/inceff/tcf/index.php';
 var home = 'http://flask-env.picmpn3pqu.us-west-2.elasticbeanstalk.com/';
 var sport = '';
 var year = '';
@@ -160,10 +159,11 @@ function cr_btns_page(temp_obj){
 			break;
 		}
 		var btn_temp = document.createElement('button');
-		// Add a listener to each button.
-		cL_btn_page(btn_temp);
+		btn_temp.id = 'page_button_' + (i + 1);
 		btn_temp.className = 'large green button';
 		btn_temp.innerHTML = i + 1;
+		// Add a listener to each button.
+		cL_btn_page(btn_temp);
 		// Create a new row after 10 buttons are created.
 		if(i % 10 == 0){
 			// Create a new row.
@@ -247,7 +247,7 @@ function cr_layout_tcf(column_names){
 	//Clear the area where two tables will go.
 	var header = document.getElementById('main__table-header');
 	header.innerHTML = '';
-	header.className = 'main__table-header main__table-header_border-bottom';
+	header.className = 'main__table-header';
 	var c3_C_r2 = document.getElementById('c3_C_r2');
 	c3_C_r2.innerHTML = '';
 	//Create table1.
@@ -328,9 +328,17 @@ function display_result(response){
 	var top = document.getElementById('p' + (current_record - 1));
 	feedback.insertBefore(temp_p, top);
 	current_record++;
+	// Reset the cursor when the page is finished.
 	if(current_record > total_records || current_record % 100 == 0){
-		// Reset the cursor.
 		document.body.style.cursor = 'default';
+		// Move to the next page.
+		var next_page_id = 'page_button_' + (parseInt(page) + 1);
+		var next_button = document.getElementById(next_page_id);
+		console.log('Next page is ' + next_page_id);
+		if(next_button){
+			var event = new Event('click');
+			next_button.dispatchEvent(event);
+		}
 	}
 }
 function search_dealer_home(){

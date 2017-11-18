@@ -81,14 +81,11 @@ html{
 		width: 60%;
 	}
 	
-		.main__table-header{
+		/* .main__table-header{
+			border-bottom: 0.0625em solid black;
 			border-left: 0.0625em solid black;
 			border-right: 0.0625em solid black;
-		}
-		
-			.main__table-header_border-bottom{
-				border-bottom: 0.0625em solid black;
-			}
+		} */
 	
 	.feedback{
 		height: 24em;

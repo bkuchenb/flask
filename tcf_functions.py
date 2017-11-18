@@ -126,6 +126,7 @@ def insert_player(cursor: 'cursor', card_data: dict, index: int) -> str:
 
 
 def insert_set(cursor: 'cursor', card_data: dict) -> str:
+    print(card_data['set_id'])
     # Add the set to tcf_set if there is only one manufacturer and one brand.
     if 'manufacturer_id' in card_data and 'brand_id' in card_data:
         if(len(card_data['manufacturer_id']) > 1 or
@@ -160,9 +161,9 @@ def insert_set(cursor: 'cursor', card_data: dict) -> str:
                               card_data['manufacturer_id'][0],
                               card_data['set_url'],))
     # If there is no brand and no manufacturer, remove the variables.
-    elif 'brand_id' not in card_data and 'manufacturer_id' in card_data:
+    else:
         _SQL = ("INSERT INTO tcf_set"
-                "(set_id, set_year, set_name, manufacturer_id, set_url) "
+                "(set_id, set_year, set_name, set_url) "
                 "VALUES(%s, %s, %s, %s)")
         cursor.execute(_SQL, (card_data['set_id'], card_data['set_year'],
                               card_data['set_name'], card_data['set_url'],))
@@ -320,6 +321,7 @@ def update_inventory(cursor: 'cursor', card_data: dict) -> str:
 def add_card_data(card_data: dict, cursor: 'cursor') -> None:
     try:
         debugging = False
+        # debugging = True
         # start_time = time.time()
         # Check to see if there is more than 1 brand_id.
         if 'brand_id' in card_data:
@@ -424,7 +426,7 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
             result = select_attribute(cursor, card_data, index)
             # If the attribute doesn't exist, insert it into tcf_attribute.
             if len(result) == 0:
-                insert_attribute(cursor, card_data)
+                insert_attribute(cursor, card_data, index)
                 # Get the attribute_id just created.
                 result = select_attribute(cursor, card_data, index)
                 card_data['attribute_id'] = result[0][0]
@@ -439,7 +441,7 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
                 result = select_card_attr(cursor, card_data, index)
                 # If the card_attribute doesn't exist, insert it.
                 if len(result) == 0:
-                    insert_card_attr(cursor, card_data, index)
+                    insert_card_attr(cursor, card_data)
             if debugging:
                 print('attribute')
 
@@ -588,23 +590,36 @@ def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
         if 'Other Attributes:' in temp_str:
             # Remove the title.
             temp_str = temp_str.replace('Other Attributes:', '').strip()
-            temp_str = temp_str.replace('(', '').strip()
-            temp_str = temp_str.replace(')', '').strip()
             temp_list = temp_str.split(',')
             for row in temp_list:
-                card_data['attribute_name'].append(row.strip())
-        if 'Attributes:' in temp_str:
-            # Find the links with the attribute_name.
-            a_list = row.find_all('a')
-            for entry in a_list:
-                temp_str = entry.text.strip()
-                temp_str = temp_str.replace('(', '').strip()
-                temp_str = temp_str.replace(')', '').strip()
-                card_data['attribute_name'].append(entry.text)
+                temp_str = row.replace('(', '')
+                temp_str = temp_str.replace(')', '')
+                print(temp_str)
+                card_data['attribute_name'].append(temp_str.strip())
+        # if 'Attributes:' in temp_str:
+            # # Remove the title.
+            # temp_str = temp_str.replace('Attributes::', '').strip()
+            # # Find the links with the attribute_name.
+            # temp_list = temp_str.split(',')
+            # for row in temp_list:
+                # temp_str = row.replace('(', '')
+                # temp_str = temp_str.replace(')', '')
+                # print(temp_str)
+                # card_data['attribute_name'].append(temp_str.strip())
         if 'Print Run:' in temp_str:
             # Remove the title.
             temp_str = temp_str.replace('Print Run:', '').strip()
             card_data['print_run'] = temp_str
+
+    # Get the attributes.
+    a_list = card_soup.find_all('a', 'atb-ser')
+    for entry in a_list:
+        temp_list = entry.text.split(',')
+        for row in temp_list:
+            temp_str = row.replace('(', '')
+            temp_str = temp_str.replace(')', '')
+            card_data['attribute_name'].append(temp_str.strip())
+
     # Get the player_name.
     a_list = card_soup.find_all(href=re.compile('www.beckett.com/player/'))
 #    print(len(a_list), 'player links were found.')
@@ -616,6 +631,7 @@ def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
         temp_list = entry['href'].split('-')
         temp_str = temp_list[-1]
         card_data['player_id'].append(temp_str)
+
     # Update the card_name field.
     temp_str = card_data['card_name']
     temp_str = temp_str.replace(card_data['set_year'], '', 1).strip()
@@ -649,7 +665,7 @@ def get_card_id(card_data: dict) -> dict:
         temp_list = temp_list[1].split('&')
         card_data['set_id'] = temp_list[0]
         # Save the total number of cards in the set.
-        total_cards = int(a_list[0].text.strip())
+        total_cards = int(a_list[0].text.strip().replace(',', ''))
         # Calculate the max number of pages to search.
         page_end = math.ceil(total_cards/25)
 #        print('This set has', total_cards, 'cards.')
