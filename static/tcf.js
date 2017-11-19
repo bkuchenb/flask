@@ -329,7 +329,7 @@ function display_result(response){
 	feedback.insertBefore(temp_p, top);
 	current_record++;
 	// Reset the cursor when the page is finished.
-	if(current_record > total_records || current_record % 100 == 0){
+	if(current_record > total_records || (current_record - 1) % 100 == 0){
 		document.body.style.cursor = 'default';
 		// Move to the next page.
 		var next_page_id = 'page_button_' + (parseInt(page) + 1);
@@ -398,6 +398,7 @@ function get_set_list(){
 		if (xhttp.readyState == 4 && xhttp.status == 200){
 			//Get the set list with sales totals.
 			var json_list = JSON.parse(xhttp.responseText);
+			console.log(json_list);
 			//Add the data to table2.
 			for(var i = 0; i < json_list.length; i++){
 				var temp_list = [json_list[i]['set_year'],

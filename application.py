@@ -32,7 +32,7 @@ def get_set_list() -> 'json':
         # Turn the results into a list of dicts.
         temp_list = [{'set_year': row[0], 'set_name': row[1],
                       'location': row[2], 'total': row[3]} for row in results]
-        print(jsonify(temp_list))
+        print(temp_list)
         return jsonify(temp_list)
 
 
