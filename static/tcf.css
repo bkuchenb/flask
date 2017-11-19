@@ -81,11 +81,11 @@ html{
 		width: 60%;
 	}
 	
-		/* .main__table-header{
+		.main__table-header{
 			border-bottom: 0.0625em solid black;
 			border-left: 0.0625em solid black;
 			border-right: 0.0625em solid black;
-		} */
+		}
 	
 	.feedback{
 		height: 24em;
@@ -105,7 +105,7 @@ html{
 .c3_C_r2_default{
 	border-left: 0.0625em solid black;
 	border-right: 0.0625em solid black;
-	height: 24em;
+	height: 22.5em;
 	overflow-y: scroll;
 }
 @media screen and (min-height: 700px){
@@ -133,6 +133,8 @@ html{
 }
 .navbar_li{
 	display: inline;
+	margin: 0;
+	padding: 0;
 }
 .c3_L_r1, .c3_L_r2, .c3_L_r3,
 .c3_L_r4, .c3_L_r5, .c3_L_r6,
@@ -188,7 +190,7 @@ html{
 	text-align: left;
 	vertical-align: top;
 }
-.tr:hover{
+.tr:hover .td{
   background-color: #5cd65c;
 }
 .td0, .td2, .td3{
@@ -196,7 +198,21 @@ html{
 }
 .td1{
 	width: 54%;
-}#th0, #th2, #th3{
+}
+
+.td3{
+	background: none;
+	border: none;
+	display: inline-block;
+	font-size: 1em;
+	margin-bottom: 0.125em;
+	margin-left: 0.125em;
+	margin-top: 0.125em;
+	min-height: 1.3em;
+	text-align: center;
+	vertical-align: top;	
+}
+#th0, #th2, #th3{
 	width: 14%;
 }
 #th1{
@@ -338,4 +354,11 @@ html{
 .card_name{
 	margin: 0;
 	padding: 0;
+}
+.btn_sales{
+	width: 100%;
+}
+.background-border{
+	background-color: white;
+	border: 0.0625em solid black;
 }

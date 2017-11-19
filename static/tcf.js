@@ -13,6 +13,12 @@ document.getElementById('logo__button').addEventListener('click', function(event
 	event.preventDefault();
 	window.location.href = home;
 }, false);
+// Add an event listener to the Overstock button.
+document.getElementById('c3_L_r1_btn0').addEventListener('click', function(event){
+	event.preventDefault();
+	document.getElementById('c3_C_r2').innerHTML = '';
+	cr_btns_sport();
+}, false);
 // Create the sport buttons.
 cr_btns_sport();
 cL_btn_inventory(document.getElementById('c3_L_r5_btn0'))
@@ -21,7 +27,11 @@ function cL_btn_inventory(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
 		// Clear the buttons and card number display area.
-		document.getElementById('main__table-header').innerHTML = '';
+		var temp_div = document.getElementById('main__table-header');
+		if(temp_div){
+			temp_div.innerHTML = '';
+			temp_div.className = '';
+		}
 		document.getElementById('c3_C_r2').innerHTML = '';
 		document.getElementById('feedback').innerHTML = '';
 		// Reset the current_record global.
@@ -32,6 +42,7 @@ function cL_btn_inventory(btn_temp){
 		mode = 'inventory';
 	}, false);
 }
+
 function cL_btn_letter(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
@@ -55,6 +66,7 @@ function cL_btn_letter(btn_temp){
 		
 	}, false);
 }
+
 function cL_btn_page(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
@@ -66,6 +78,32 @@ function cL_btn_page(btn_temp){
 		btn_temp.className += ' btn_hidden';
 	}, false);
 }
+
+function cL_btn_page(btn_temp){
+	btn_temp.addEventListener('click', function(event){
+		event.preventDefault();
+		// Save the page number.
+		page = btn_temp.innerHTML;
+		current_record = (parseInt(page) * 100) - 99;
+		document.body.style.cursor = 'wait';
+		search_for_page(page);
+		btn_temp.className += ' btn_hidden';
+	}, false);
+}
+
+function cL_btn_sales(btn_temp){
+	btn_temp.addEventListener('click', function(event){
+		event.preventDefault();
+		// Get the set_name from column 1.
+		var row_num = btn_temp.id.replace('btn_sales', '');
+		var row = document.getElementById('tbody_tr' + row_num);
+		var cells = row.getElementsByClassName('td td1');
+		temp_obj = {'category': sport, 'set_year': year,
+		'set_name': cells[0].innerHTML};
+		get_sales(temp_obj, btn_temp.id);
+	}, false);
+}
+
 function cL_btn_sport(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
@@ -83,6 +121,7 @@ function cL_btn_sport(btn_temp){
 		cr_btns_year();
 	}, false);
 }
+
 function cL_btn_year(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
@@ -109,6 +148,7 @@ function cL_btn_year(btn_temp){
 		}
 	}, false);
 }
+
 function cr_btns_letter(){
 	var btn_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
 	'M','N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '%'];
@@ -141,6 +181,7 @@ function cr_btns_letter(){
 		}
 	}	
 }
+
 function cr_btns_page(temp_obj){
 	// Save the total records in the global variable.
 	total_records = response.records
@@ -182,6 +223,21 @@ function cr_btns_page(temp_obj){
 		}
 	}	
 }
+
+function cr_btns_sales(){
+	// Get all the td elements in the last column.
+	var td_list = document.getElementsByClassName('td3');
+	// Add a button to the cells.
+	for(var i = 0; i < td_list.length; i++){
+		var temp_btn = document.createElement('button');
+		temp_btn.id = 'btn_sales' + i;
+		temp_btn.className = 'btn_sales';
+		temp_btn.innerHTML = 'Sales';
+		cL_btn_sales(temp_btn);
+		td_list[i].appendChild(temp_btn);
+	}
+}
+
 function cr_btns_sport(){
 	var btn_list = ['Baseball', 'Football', 'Basketball', 'Hockey',
 						  'Nonsports', 'Multisport', 'Racing', 'Wrestling',
@@ -216,6 +272,7 @@ function cr_btns_sport(){
 		}
 	}
 }
+
 function cr_btns_year(){
 	var row = 0;
 	var div_temp = '';
@@ -243,10 +300,11 @@ function cr_btns_year(){
 		}
 	}	
 }
+
 function cr_layout_tcf(column_names){
 	//Clear the area where two tables will go.
-	var header = document.getElementById('main__table-header');
-	header.innerHTML = '';
+	var header = document.createElement('div');
+	header.id = 'main__table-header';
 	header.className = 'main__table-header';
 	var c3_C_r2 = document.getElementById('c3_C_r2');
 	c3_C_r2.innerHTML = '';
@@ -271,6 +329,7 @@ function cr_layout_tcf(column_names){
 	temp_div_thead.appendChild(temp_div_tr);
 	temp_div_table.appendChild(temp_div_thead);
 	header.appendChild(temp_div_table);
+	document.getElementById('main').insertBefore(header, c3_C_r2);
 	
 	//Create table2.
 	var temp_div_table = document.createElement('div');
@@ -282,6 +341,7 @@ function cr_layout_tcf(column_names){
 	temp_div_table.appendChild(temp_div_tbody);
 	c3_C_r2.appendChild(temp_div_table);
 }
+
 function cr_loader(){
 	// Clear the buttons.
 	var c3_C_r2 = document.getElementById('c3_C_r2');
@@ -292,17 +352,23 @@ function cr_loader(){
 	temp_div.className = 'loader';
 	c3_C_r2.appendChild(temp_div);
 }
+
 function cr_row_tcf(temp_list){
 	//Create a new row.
 	var temp_div_tr = document.createElement('div');
 	temp_div_tr.id = 'tbody_tr' + row_num;
 	temp_div_tr.className = 'tr tbody_tr';
 	//Create the cells for the tbody_tr.
-	for(var i = 0; i < temp_list.length; i++){
+	for(var i = 0; i < temp_list.length + 1; i++){
 		//Create the cell.
 		var temp_div_td = document.createElement('div');
-		temp_div_td.className = 'td td' + i;
-		temp_div_td.innerHTML = temp_list[i];
+		if(i != 3){
+			temp_div_td.className = 'td td' + i;
+			temp_div_td.innerHTML = temp_list[i];
+		}
+		else{
+			temp_div_td.className = 'td' + i;
+		}
 		//Add the cell to the row.
 		temp_div_tr.appendChild(temp_div_td);
 	}
@@ -311,6 +377,7 @@ function cr_row_tcf(temp_list){
 	//Update the row number.
 	row_num++;
 }
+
 function display_result(response){
 	// Get the display area.
 	var feedback = document.getElementById('feedback');
@@ -341,6 +408,7 @@ function display_result(response){
 		}
 	}
 }
+
 function search_dealer_home(){
 	// Show the loader while the server is working.
 	cr_loader();
@@ -357,6 +425,7 @@ function search_dealer_home(){
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(post_data);
 }
+
 function search_for_page(pg){
 	var xhttp = new XMLHttpRequest();
 	var post_data = 'year=' + year + '&page=' + pg;
@@ -377,6 +446,7 @@ function search_for_page(pg){
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(post_data);
 }
+
 function search_for_record(record){
 	var xhttp = new XMLHttpRequest();
 	var post_data = record
@@ -391,27 +461,47 @@ function search_for_record(record){
 	xhttp.setRequestHeader("Content-type", "application/json");
 	xhttp.send(JSON.stringify(post_data));
 }
+
 function get_set_list(){
 	var xhttp = new XMLHttpRequest();
 	var post_data = 'category=' + sport + '&year=' + year + '&letter=' + letter;
 	xhttp.onreadystatechange = function(){
 		if (xhttp.readyState == 4 && xhttp.status == 200){
-			//Get the set list with sales totals.
+			// Get the set list with sales totals.
 			var json_list = JSON.parse(xhttp.responseText);
 			console.log(json_list);
-			//Add the data to table2.
+			// Display the results.
 			for(var i = 0; i < json_list.length; i++){
 				var temp_list = [json_list[i]['set_year'],
-				json_list[i]['set_name'], json_list[i]['location'],
-				json_list[i]['total']]
+				json_list[i]['set_name'], json_list[i]['location']]
 				cr_row_tcf(temp_list);
-			}//Add the data to table2.
+			}
+			// Add buttons that will get sales data.
+			cr_btns_sales();
 		}
 	}
 	xhttp.open("POST", "/set_list", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(post_data);
 }
+
+function get_sales(post_data, btn_id){
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function(){
+		if (xhttp.readyState == 4 && xhttp.status == 200){
+			// Get the set list with sales totals.
+			var json_list = JSON.parse(xhttp.responseText);
+			console.log(json_list[0]['total']);
+			var temp_div = document.getElementById(btn_id).parentElement;
+			temp_div.className = temp_div.className + ' background-border';
+			temp_div.innerHTML = json_list[0]['total'];
+		}
+	}
+	xhttp.open("POST", "/get_sales", true);
+	xhttp.setRequestHeader("Content-type", "application/json");
+	xhttp.send(JSON.stringify(post_data));
+}
+
 function create_table(parent_node_id, column_names, json_list, json_list_keys){
 	//Clear the area where the table will go.
 	var parent_node = document.getElementById(parent_node_id);

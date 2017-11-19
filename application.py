@@ -16,23 +16,45 @@ application.config['db'] = {'host': inceff_host,
 @application.route('/set_list', methods=['POST'])
 def get_set_list() -> 'json':
     with UseDatabase(application.config['db']) as cursor:
-        _SQL = ("SELECT * "
-                "FROM tcf_set "
-                "INNER JOIN tcf_set_category "
-                "ON tcf_set.set_id = tcf_set_category.set_id "
-                "INNER JOIN tcf_category "
-                "ON tcf_category.category_id = tcf_set_category.category_id "
-                "WHERE tcf_category.category_name = %s "
-                "AND tcf_set.set_year = %s "
-                "AND tcf_set.set_name LIKE %s ")
+        letter = request.form['letter'] + '%'
+        _SQL = ("SELECT tcf_sets.set_year, tcf_sets.set_name, "
+                "tcf_overstock.location "
+                "FROM tcf_sets "
+                "LEFT JOIN tcf_overstock "
+                "ON tcf_sets.set_id = tcf_overstock.set_id "
+                "WHERE tcf_sets.category = %s "
+                "AND tcf_sets.set_year = %s "
+                "AND tcf_sets.set_name LIKE %s "
+                "ORDER BY tcf_sets.set_name ASC")
         cursor.execute(_SQL, (request.form['category'], request.form['year'],
-                              request.form['letter'],))
+                              letter,))
         results = cursor.fetchall()
 
         # Turn the results into a list of dicts.
         temp_list = [{'set_year': row[0], 'set_name': row[1],
-                      'location': row[2], 'total': row[3]} for row in results]
-        print(temp_list)
+                      'location': row[2]} for row in results]
+        return jsonify(temp_list)
+
+
+@application.route('/get_sales', methods=['POST'])
+def get_sales() -> 'json':
+    with UseDatabase(application.config['db']) as cursor:
+        # Get the set to search for from the json data.
+        entry = request.get_json()
+        _SQL = ("SELECT SUM(total) as total "
+                "FROM tcf_orderdetails "
+                "WHERE tcf_orderdetails.sport = %s "
+                "AND tcf_orderdetails.year = %s "
+                "AND tcf_orderdetails.setName = %s ")
+        cursor.execute(_SQL, (entry['category'], entry['set_year'],
+                              entry['set_name'],))
+        results = cursor.fetchall()
+
+        # Turn the results into a list of dicts.
+        if results[0][0]:
+            temp_list = [{'total': '$' + str(row[0])} for row in results]
+        else:
+            temp_list = [{'total': '$0.00'} for row in results]
         return jsonify(temp_list)
 
 
