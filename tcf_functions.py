@@ -126,7 +126,6 @@ def insert_player(cursor: 'cursor', card_data: dict, index: int) -> str:
 
 
 def insert_set(cursor: 'cursor', card_data: dict) -> str:
-    print(card_data['set_id'])
     # Add the set to tcf_set if there is only one manufacturer and one brand.
     if 'manufacturer_id' in card_data and 'brand_id' in card_data:
         if(len(card_data['manufacturer_id']) > 1 or
@@ -280,14 +279,8 @@ def select_player(cursor: 'cursor', card_data: dict, index: int) -> str:
 def select_set(cursor: 'cursor', card_data: dict, index: int) -> str:
     _SQL = ("SELECT tcf_set.set_id "
             "FROM tcf_set "
-            "INNER JOIN tcf_set_category "
-            "ON tcf_set.set_id = tcf_set_category.set_id "
-            "WHERE tcf_set.set_year = %s "
-            "AND tcf_set_category.category_id = %s "
-            "AND tcf_set.set_name = %s")
-    cursor.execute(_SQL, (card_data['set_year'],
-                          card_data['category_id'][index],
-                          card_data['set_name'],))
+            "WHERE tcf_set.set_id = %s")
+    cursor.execute(_SQL, (card_data['set_id'],))
     return cursor.fetchall()
 
 
@@ -321,7 +314,10 @@ def update_inventory(cursor: 'cursor', card_data: dict) -> str:
 def add_card_data(card_data: dict, cursor: 'cursor') -> None:
     try:
         debugging = False
-        # debugging = True
+#        debugging = True
+        if debugging:
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(card_data)
         # start_time = time.time()
         # Check to see if there is more than 1 brand_id.
         if 'brand_id' in card_data:
@@ -365,7 +361,7 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
                 # Check to see if the set_category has already been added.
                 result = select_set_category(cursor, card_data, index)
                 # If the set_category doesn't exist, insert it.
-                if(len(result) == 0):
+                if len(result) == 0:
                     insert_set_category(cursor, card_data, index)
         if debugging:
             print('category')
@@ -459,13 +455,17 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
 
 
 def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
+    """ This function scrapes information from the page that loads
+        when navigating to a specific card located on a dealer's
+        marketplace homepage (inventory_url)."""
+
     # Get the image links.
     temp_img = soup.find_all(id='item_image_front')
     card_data['image_src_front'] = temp_img[0]['src']
     temp_img = soup.find_all(id='item_image_back')
     card_data['image_src_back'] = temp_img[0]['src']
-    # Get the span that contains the price data.
     try:
+        # Get the span that contains the price data.
         div_list = soup.find_all('div', 'price-div')
         for row in div_list:
             # Strip and save the innerHtml.
@@ -498,7 +498,8 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                 card_data['quantity'] = temp_str
                 card_data['max'] = temp_str
                 break
-        # Get the sport, team, brand, and manufaturer.
+
+        # Get the team, brand, and manufaturer.
         li_list = soup.find_all('li')
         for row in li_list:
             # Strip and save the innerHtml.
@@ -510,12 +511,14 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                 temp_list = temp_str.split(',')
                 card_data['category_name'] = temp_list
                 a_list = row.find_all('a')
-                card_data['category_url'] = list()
-                card_data['category_id'] = list()
-                for entry in a_list:
-                    card_data['category_url'].append(entry['href'])
-                    temp_list = entry['href'].split('=')
-                    card_data['category_id'].append(temp_list[-1])
+                if len(a_list) > 0:
+                    card_data['category_url'] = list()
+                    card_data['category_id'] = list()
+                    for entry in a_list:
+                        card_data['category_url'].append(entry['href'])
+                        temp_list = entry['href'].split('=')
+                        card_data['category_id'].append(temp_list[-1])
+
             # Get the team_name and team_id.
             if 'Team:' in temp_str:
                 temp_str = temp_str.replace('Team:', '').strip()
@@ -529,6 +532,7 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                     card_data['team_url'].append(entry['href'])
                     temp_list = entry['href'].split('=')
                     card_data['team_id'].append(temp_list[-1])
+
             # Get the brand info.
             if 'Brand:' in temp_str:
                 temp_str = temp_str.replace('Brand:', '').strip()
@@ -542,6 +546,7 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
                     card_data['brand_url'].append(entry['href'])
                     temp_list = entry['href'].split('=')
                     card_data['brand_id'].append(temp_list[-1])
+
             # Get the manufacturer info.
             if 'Manufacturer:' in temp_str:
                 temp_str = temp_str.replace('Manufacturer:', '').strip()
@@ -563,6 +568,10 @@ def get_card_data(soup: 'BeautifulSoup', card_data: dict) -> dict:
 
 
 def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
+    """ This function scrapes information from a page that loads when
+        navigating to a specific card located on the list of cards
+        available from a set search."""
+
     # Find the list that contains more card_data.
     class_name = 'similar-item similar-item-new'
     ul_list = card_soup.find_all('ul', class_name)
@@ -587,29 +596,31 @@ def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
             # Remove the title.
             temp_str = temp_str.replace('Card Number:', '').strip()
             card_data['card_number'] = temp_str
-        if 'Other Attributes:' in temp_str:
-            # Remove the title.
-            temp_str = temp_str.replace('Other Attributes:', '').strip()
-            temp_list = temp_str.split(',')
-            for row in temp_list:
-                temp_str = row.replace('(', '')
-                temp_str = temp_str.replace(')', '')
-                print(temp_str)
-                card_data['attribute_name'].append(temp_str.strip())
-        # if 'Attributes:' in temp_str:
-            # # Remove the title.
-            # temp_str = temp_str.replace('Attributes::', '').strip()
-            # # Find the links with the attribute_name.
-            # temp_list = temp_str.split(',')
-            # for row in temp_list:
-                # temp_str = row.replace('(', '')
-                # temp_str = temp_str.replace(')', '')
-                # print(temp_str)
-                # card_data['attribute_name'].append(temp_str.strip())
+#        if 'Other Attributes:' in temp_str:
+#            # Remove the title.
+#            temp_str = temp_str.replace('Other Attributes:', '').strip()
+#            temp_list = temp_str.split(',')
+#            for row in temp_list:
+#                temp_str = row.replace('(', '')
+#                temp_str = temp_str.replace(')', '')
+#                print(temp_str)
+#                card_data['attribute_name'].append(temp_str.strip())
+
         if 'Print Run:' in temp_str:
             # Remove the title.
             temp_str = temp_str.replace('Print Run:', '').strip()
             card_data['print_run'] = temp_str
+
+    # Get the 'Other attributes.
+    temp_strong = card_soup.find_all('strong', string='Other Attributes:')
+    if len(temp_strong) > 0:
+        temp_parent = temp_strong[0].parent
+        temp_str = temp_parent.text.replace('Other Attributes:', '').strip()
+        temp_list = temp_str.split(',')
+        for entry in temp_list:
+            temp_str = entry.replace('(', '')
+            temp_str = temp_str.replace(')', '')
+            card_data['attribute_name'].append(temp_str.strip())
 
     # Get the attributes.
     a_list = card_soup.find_all('a', 'atb-ser')
@@ -619,6 +630,26 @@ def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
             temp_str = row.replace('(', '')
             temp_str = temp_str.replace(')', '')
             card_data['attribute_name'].append(temp_str.strip())
+
+    # Get the category_id if it wasn't obtained from get_card_data.
+    if 'category_id' not in card_data:
+        # Find the strong elements with innerHtml="Sport:".
+        temp_strong = card_soup.find_all('strong', string='Sport:')
+        # If needed, check for multiple entries innerHtml="Sports:".
+        if len(temp_strong) == 0:
+            # Find the strong elements with innerHtml="Sports:".
+            temp_strong = card_soup.find_all('strong', string='Sports:')
+        # Find the temp_strong sibling a elements.
+        a_list = temp_strong[0].find_next_siblings('a')
+        card_data['category_url'] = list()
+        card_data['category_id'] = list()
+        card_data['category_name'] = list()
+        for entry in a_list:
+            # Save the category_url and category_id.
+            card_data['category_url'].append(entry['href'])
+            temp_list = entry['href'].split('=')
+            card_data['category_id'].append(temp_list[-1])
+            card_data['category_name'].append(entry.text.strip())
 
     # Get the player_name.
     a_list = card_soup.find_all(href=re.compile('www.beckett.com/player/'))
@@ -713,6 +744,9 @@ def get_card_id(card_data: dict) -> dict:
 
 
 def get_inventory_ids(soup: 'BeautifulSoup') -> list:
+    """ This function scrapes information from a page that loads when
+        navigating a dealer's marketplace homepage."""
+
     # Create a list to store data for each record.
     records = []
     try:
