@@ -15,29 +15,25 @@ application.config['db'] = {'host': inceff_host,
 
 @application.route('/set_list', methods=['POST'])
 def get_set_list() -> 'json':
-    data = {'category_name': request.form['category'],
-            'set_year': request.form['year'],
-            'letter': request.form['letter'], }
     with UseDatabase(application.config['db']) as cursor:
         _SQL = ("SELECT * "
                 "FROM tcf_set "
+                "INNER JOIN tcf_set_category "
+                "ON tcf_set.set_id = tcf_set_category.set_id "
                 "INNER JOIN tcf_category "
-                "ON tcf_set.category_id = tcf_category.category_id "
-                "WHERE tcf_category.category_name = {category_name!r} "
-                "AND tcf_set.set_year = {set_year} "
-                "AND tcf_set.set_name LIKE {letter!r} ")
-        cursor.execute(_SQL.format(**data))
+                "ON tcf_category.category_id = tcf_set_category.category_id "
+                "WHERE tcf_category.category_name = %s "
+                "AND tcf_set.set_year = %s "
+                "AND tcf_set.set_name LIKE %s ")
+        cursor.execute(_SQL, (request.form['category'], request.form['year'],
+                              request.form['letter'],))
         results = cursor.fetchall()
-        results = [['1990', 'Topps', '281', '$12.00'],
-                   ['1991', 'Topps', '282', '$13.00']]
 
-    # Turn the results into a list of dicts.
-    temp_list = []
-    for row in results:
-        temp_dict = {'set_year': row[0], 'set_name': row[1],
-                     'location': row[2], 'total': row[3]}
-        temp_list.append(temp_dict)
-    return jsonify(temp_list)
+        # Turn the results into a list of dicts.
+        temp_list = [{'set_year': row[0], 'set_name': row[1],
+                      'location': row[2], 'total': row[3]} for row in results]
+        print(jsonify(temp_list))
+        return jsonify(temp_list)
 
 
 @application.route('/search_dealer_home', methods=['POST'])

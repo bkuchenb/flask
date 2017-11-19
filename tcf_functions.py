@@ -596,15 +596,6 @@ def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
             # Remove the title.
             temp_str = temp_str.replace('Card Number:', '').strip()
             card_data['card_number'] = temp_str
-#        if 'Other Attributes:' in temp_str:
-#            # Remove the title.
-#            temp_str = temp_str.replace('Other Attributes:', '').strip()
-#            temp_list = temp_str.split(',')
-#            for row in temp_list:
-#                temp_str = row.replace('(', '')
-#                temp_str = temp_str.replace(')', '')
-#                print(temp_str)
-#                card_data['attribute_name'].append(temp_str.strip())
 
         if 'Print Run:' in temp_str:
             # Remove the title.
@@ -646,10 +637,11 @@ def get_card_data2(card_soup: 'BeautifulSoup', card_data: dict) -> dict:
         card_data['category_name'] = list()
         for entry in a_list:
             # Save the category_url and category_id.
-            card_data['category_url'].append(entry['href'])
-            temp_list = entry['href'].split('=')
-            card_data['category_id'].append(temp_list[-1])
-            card_data['category_name'].append(entry.text.strip())
+            if '=' in entry['href']:
+                card_data['category_url'].append(entry['href'])
+                temp_list = entry['href'].split('=')
+                card_data['category_id'].append(temp_list[-1])
+                card_data['category_name'].append(entry.text.strip())
 
     # Get the player_name.
     a_list = card_soup.find_all(href=re.compile('www.beckett.com/player/'))
