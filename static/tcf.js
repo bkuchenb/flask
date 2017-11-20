@@ -38,8 +38,8 @@ function cL_btn_inventory(btn_temp){
 		event.preventDefault();
 		// Make sure the display area is the right height.
 		var display = document.getElementById('main__display');
-		display.className = 'main__display main__display_short';
-		// Clear the buttons and card number display area.
+		display.className = 'main__display main__display_tall';
+		// Clear the display areas.
 		var temp_div = document.getElementById('main__table-header');
 		if(temp_div){
 			temp_div.innerHTML = '';
@@ -47,6 +47,7 @@ function cL_btn_inventory(btn_temp){
 		}
 		display.innerHTML = '';
 		document.getElementById('feedback').innerHTML = '';
+		document.getElementById('navbar').innerHTML = '';
 		// Reset the current_record global.
 		current_record = 1;
 		// Create the year buttons to allow the user to choose the year.
