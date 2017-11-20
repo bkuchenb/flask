@@ -36,13 +36,16 @@ cL_btn_inventory(document.getElementById('c3_L_r5_btn0'))
 function cL_btn_inventory(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
+		// Make sure the display area is the right height.
+		var display = document.getElementById('main__display');
+		display.className = 'main__display main__display_short';
 		// Clear the buttons and card number display area.
 		var temp_div = document.getElementById('main__table-header');
 		if(temp_div){
 			temp_div.innerHTML = '';
 			temp_div.className = '';
 		}
-		document.getElementById('main__display').innerHTML = '';
+		display.innerHTML = '';
 		document.getElementById('feedback').innerHTML = '';
 		// Reset the current_record global.
 		current_record = 1;
