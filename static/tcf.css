@@ -80,6 +80,22 @@ html{
 		text-align: center;
 		width: 60%;
 	}
+		
+		.main__display_short{
+			border-left: 0.0625em solid black;
+			border-right: 0.0625em solid black;
+			height: 22.45em;
+			overflow-y: scroll;
+			padding-top: 0.3125em;
+		}
+		
+		.main__display_tall{
+			border-left: 0.0625em solid black;
+			border-right: 0.0625em solid black;
+			height: 24em;
+			overflow-y: scroll;
+			padding-top: 0.3125em;
+		}
 	
 		.main__table-header{
 			border-bottom: 0.0625em solid black;
@@ -102,12 +118,7 @@ html{
     width: 100%;
 }
 
-.c3_C_r2_default{
-	border-left: 0.0625em solid black;
-	border-right: 0.0625em solid black;
-	height: 22.5em;
-	overflow-y: scroll;
-}
+
 @media screen and (min-height: 700px){
 	.c3_L_default, .feedback{
 		display: inline-block;
@@ -123,7 +134,7 @@ html{
 		text-align: center;
 		width: 60%;
 	}
-	.c3_C_r2_default{
+	.main__display_tall{
 		border-bottom: 0.0625em solid black;
 		border-left: 0.0625em solid black;
 		border-right: 0.0625em solid black;
@@ -133,7 +144,7 @@ html{
 }
 .navbar_li{
 	display: inline;
-	margin: 0;
+	margin: 0.5em;
 	padding: 0;
 }
 .c3_L_r1, .c3_L_r2, .c3_L_r3,
@@ -152,9 +163,6 @@ html{
 	font-size: 1.5em;
 	font-weight: bold;
 	/* text-align: center; */
-}
-.c3_C_r2_default{
-	padding-top: 0.3125em;
 }
 .table{
 	font-size: 1em;
@@ -199,7 +207,6 @@ html{
 .td1{
 	width: 54%;
 }
-
 .td3{
 	background: none;
 	border: none;

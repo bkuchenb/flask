@@ -16,7 +16,17 @@ document.getElementById('logo__button').addEventListener('click', function(event
 // Add an event listener to the Overstock button.
 document.getElementById('c3_L_r1_btn0').addEventListener('click', function(event){
 	event.preventDefault();
-	document.getElementById('c3_C_r2').innerHTML = '';
+	// Set the mode.
+	mode = 'overstock';
+	var header = document.getElementById('main__table-header');
+	if(header){
+		header.parentElement.removeChild(header);
+	}
+	// Make sure the display area is the right height.
+	var display = document.getElementById('main__display');
+	display.className = 'main__display main__display_tall';
+	// Clear the display and add the sport buttons.
+	display.innerHTML = '';
 	cr_btns_sport();
 }, false);
 // Create the sport buttons.
@@ -32,7 +42,7 @@ function cL_btn_inventory(btn_temp){
 			temp_div.innerHTML = '';
 			temp_div.className = '';
 		}
-		document.getElementById('c3_C_r2').innerHTML = '';
+		document.getElementById('main__display').innerHTML = '';
 		document.getElementById('feedback').innerHTML = '';
 		// Reset the current_record global.
 		current_record = 1;
@@ -52,12 +62,12 @@ function cL_btn_letter(btn_temp){
 		document.getElementById('link_letter').innerHTML = letter;
 		document.getElementById('link_letter').addEventListener('click', function(event){
 			//Clear the buttons.
-			c3_C_r2.innerHTML = '';
+			main__display.innerHTML = '';
 			//Create the letter buttons to allow the user to re-choose the letter.
 			cr_btns_letter();
 		}, false);
 		//Clear the buttons.
-		document.getElementById('c3_C_r2').innerHTML = '';
+		document.getElementById('main__display').innerHTML = '';
 		var column_names = ['Year', 'Set', 'Location', 'Sales'];
 		//Create the tables needed to display the set data.
 		cr_layout_tcf(column_names);
@@ -116,7 +126,7 @@ function cL_btn_sport(btn_temp){
 			window.location.href = home;
 		}, false);
 		//Clear the buttons.
-		document.getElementById('c3_C_r2').innerHTML = '';
+		document.getElementById('main__display').innerHTML = '';
 		//Create the year buttons.
 		cr_btns_year();
 	}, false);
@@ -137,12 +147,12 @@ function cL_btn_year(btn_temp){
 			document.getElementById('link_year').innerHTML = year;
 			document.getElementById('link_year').addEventListener('click', function(event){
 				// Clear the buttons.
-				document.getElementById('c3_C_r2').innerHTML = '';
+				document.getElementById('main__display').innerHTML = '';
 				// Create the year buttons to allow the user to re-choose the year.
 				cr_btns_year();
 			}, false);
 			//Clear the buttons.
-			document.getElementById('c3_C_r2').innerHTML = '';
+			document.getElementById('main__display').innerHTML = '';
 			//Create the letter buttons.
 			cr_btns_letter();
 		}
@@ -173,7 +183,7 @@ function cr_btns_letter(){
 			//Add the button to the row.
 			div_temp.appendChild(btn_temp);
 			//Add the row the the center div.
-			document.getElementById('c3_C_r2').appendChild(div_temp);
+			document.getElementById('main__display').appendChild(div_temp);
 		}
 		else{
 			//Add the row the the center div.
@@ -189,9 +199,9 @@ function cr_btns_page(temp_obj){
 	var navbar = document.getElementById('navbar');
 	navbar.innerHTML = '';
 	navbar.innerHTML = 'There are ' + total_records + ' records for ' + year + '.';
-	var c3_C_r2 = document.getElementById('c3_C_r2');
+	var display = document.getElementById('main__display');
 	// Remove the loader.
-	c3_C_r2.innerHTML = '';
+	display.innerHTML = '';
 	var row = 0;
 	var div_temp = '';
 	for(var i = 0; i < Math.ceil(temp_obj.records/100, -1); i++){
@@ -215,7 +225,7 @@ function cr_btns_page(temp_obj){
 			// Add the button to the row.
 			div_temp.appendChild(btn_temp);
 			// Add the row to the center div.
-			c3_C_r2.appendChild(div_temp);
+			display.appendChild(div_temp);
 		}
 		else{
 			//Add the button to the row.
@@ -239,11 +249,13 @@ function cr_btns_sales(){
 }
 
 function cr_btns_sport(){
+	// Create the navbar list.
+	cr_navbar_list();
 	var btn_list = ['Baseball', 'Football', 'Basketball', 'Hockey',
 						  'Nonsports', 'Multisport', 'Racing', 'Wrestling',
 						  'Soccer', 'Golf', 'Magic', 'YuGiOh',
 						  'Pokemon', 'Gaming', 'Diecast', ' '];
-	//Used to name the button rows.
+	// Used to name the button rows.
 	var row = 0;
 	var div_temp = '';
 	for(var i = 0; i < btn_list.length; i++){
@@ -253,21 +265,21 @@ function cr_btns_sport(){
 			btn_temp.className += ' btn_hidden';
 		}
 		btn_temp.innerHTML = btn_list[i];
-		//Add a listener to each button.
+		// Add a listener to each button.
 		cL_btn_sport(btn_temp);
-		//Create a new row after 4 buttons are created.
+		// Create a new row after 4 buttons are created.
 		if(i % 4 == 0){
 			div_temp = document.createElement('div');
 			div_temp.id = 'btn_row_' + row;
 			div_temp.className = 'div_btn_sport';
 			row++;
-			//Add the button to the row.
+			// Add the button to the row.
 			div_temp.appendChild(btn_temp);
-			//Add the row to the center div.
-			document.getElementById('c3_C_r2').appendChild(div_temp);
+			// Add the row to the center div.
+			document.getElementById('main__display').appendChild(div_temp);
 		}
 		else{
-			//Add the button to the row.
+			// Add the button to the row.
 			div_temp.appendChild(btn_temp);
 		}
 	}
@@ -292,7 +304,7 @@ function cr_btns_year(){
 			//Add the button to the row.
 			div_temp.appendChild(btn_temp);
 			//Add the row to the center div.
-			document.getElementById('c3_C_r2').appendChild(div_temp);
+			document.getElementById('main__display').appendChild(div_temp);
 		}
 		else{
 			//Add the button to the row.
@@ -302,12 +314,15 @@ function cr_btns_year(){
 }
 
 function cr_layout_tcf(column_names){
+	// Reset the global row_num variable.
+	row_num = 0;
 	//Clear the area where two tables will go.
 	var header = document.createElement('div');
 	header.id = 'main__table-header';
 	header.className = 'main__table-header';
-	var c3_C_r2 = document.getElementById('c3_C_r2');
-	c3_C_r2.innerHTML = '';
+	var display = document.getElementById('main__display');
+	display.className = 'main__display main__display_short';
+	display.innerHTML = '';
 	//Create table1.
 	var temp_div_table = document.createElement('div');
 	temp_div_table.id = 'table1';
@@ -329,7 +344,7 @@ function cr_layout_tcf(column_names){
 	temp_div_thead.appendChild(temp_div_tr);
 	temp_div_table.appendChild(temp_div_thead);
 	header.appendChild(temp_div_table);
-	document.getElementById('main').insertBefore(header, c3_C_r2);
+	document.getElementById('main').insertBefore(header, main__display);
 	
 	//Create table2.
 	var temp_div_table = document.createElement('div');
@@ -339,18 +354,35 @@ function cr_layout_tcf(column_names){
 	temp_div_tbody.id = 'tbody';
 	//Add the elements to the layout.
 	temp_div_table.appendChild(temp_div_tbody);
-	c3_C_r2.appendChild(temp_div_table);
+	display.appendChild(temp_div_table);
+}
+
+function cr_navbar_list(){
+	// Clear the navbar.
+	document.getElementById('navbar').innerHTML = '';
+	var id_list = ['link_sport', 'link_year', 'link_letter',
+	'link_set'];
+	var temp_ul = document.createElement('ul');
+	for(var i = 0; i < id_list.length; i++){
+		var temp_li = document.createElement('li');
+		temp_li.className = 'navbar_li';
+		var temp_a = document.createElement('a');
+		temp_a.id = id_list[i];
+		temp_li.appendChild(temp_a);
+		temp_ul.appendChild(temp_li);
+	}
+	navbar.appendChild(temp_ul);
 }
 
 function cr_loader(){
 	// Clear the buttons.
-	var c3_C_r2 = document.getElementById('c3_C_r2');
-	c3_C_r2.innerHTML = '';
+	var display = document.getElementById('main__display');
+	display.innerHTML = '';
 	// Create the loader.
 	var temp_div = document.createElement('div');
 	temp_div.id = 'loader';
 	temp_div.className = 'loader';
-	c3_C_r2.appendChild(temp_div);
+	display.appendChild(temp_div);
 }
 
 function cr_row_tcf(temp_list){
@@ -469,7 +501,6 @@ function get_set_list(){
 		if (xhttp.readyState == 4 && xhttp.status == 200){
 			// Get the set list with sales totals.
 			var json_list = JSON.parse(xhttp.responseText);
-			console.log(json_list);
 			// Display the results.
 			for(var i = 0; i < json_list.length; i++){
 				var temp_list = [json_list[i]['set_year'],
