@@ -29,6 +29,23 @@ document.getElementById('c3_L_r1_btn0').addEventListener('click', function(event
 	display.innerHTML = '';
 	cr_btns_sport();
 }, false);
+
+// Add an event listener to the Sets button.
+document.getElementById('c3_L_r8_btn0').addEventListener('click', function(event){
+	event.preventDefault();
+	// Set the mode.
+	mode = 'sets';
+	var header = document.getElementById('main__table-header');
+	if(header){
+		header.parentElement.removeChild(header);
+	}
+	// Make sure the display area is the right height.
+	var display = document.getElementById('main__display');
+	display.className = 'main__display main__display_tall';
+	// Clear the display and add the year buttons.
+	display.innerHTML = '';
+	cr_btns_year();
+}, false);
 // Create the sport buttons.
 cr_btns_sport();
 cL_btn_inventory(document.getElementById('c3_L_r5_btn0'))
@@ -145,6 +162,11 @@ function cL_btn_year(btn_temp){
 		if(mode == 'inventory'){
 			// Get the number of cards listed on beckett for the search term.
 			search_dealer_home(1);
+		}
+		else if(mode == 'sets'){
+			cr_loader();
+			// Get the number of cards  in the database for that year.
+			get_set_totals();
 		}
 		else{
 			// Update the navbar.
@@ -367,6 +389,7 @@ function cr_navbar_list(){
 	var id_list = ['link_sport', 'link_year', 'link_letter',
 	'link_set'];
 	var temp_ul = document.createElement('ul');
+	temp_ul.className = 'navbar__ul';
 	for(var i = 0; i < id_list.length; i++){
 		var temp_li = document.createElement('li');
 		temp_li.className = 'navbar_li';
@@ -417,7 +440,7 @@ function cr_row_tcf(temp_list){
 function display_result(response){
 	// Get the display area.
 	var feedback = document.getElementById('feedback');
-	// Create a p element and add display the card just added.
+	// Create a p element and display the card just added.
 	var temp_p = document.createElement('p');
 	temp_p.id = 'p' + current_record;
 	temp_p.className = 'card_name';
@@ -437,12 +460,22 @@ function display_result(response){
 		// Move to the next page.
 		var next_page_id = 'page_button_' + (parseInt(page) + 1);
 		var next_button = document.getElementById(next_page_id);
-		console.log('Next page is ' + next_page_id);
 		if(next_button){
 			var event = new Event('click');
 			next_button.dispatchEvent(event);
 		}
 	}
+}
+
+function display_set_totals(response){
+	// Get the display area.
+	var feedback = document.getElementById('feedback');
+	// Create a p element and display the card just added.
+	var temp_p = document.createElement('p');
+	temp_p.className = 'set_total';
+	temp_p.innerHTML = year + ': ' + response.total + ' records.';
+	feedback.appendChild(temp_p);
+	document.getElementById('main__display').innerHTML = '';
 }
 
 function search_dealer_home(){
@@ -518,6 +551,21 @@ function get_set_list(){
 	xhttp.open("POST", "/set_list", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(post_data);
+}
+
+function get_set_totals(){
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function(){
+		if(xhttp.readyState == 4 && xhttp.status == 200){
+			//Get the number of pages for the search term.
+			response = JSON.parse(xhttp.responseText);
+			console.log(response);
+			display_set_totals(response);
+		}
+	}
+	xhttp.open("POST", "/get_set_totals", true);
+	xhttp.setRequestHeader("Content-type", "application/json");
+	xhttp.send(JSON.stringify({'year': year}));
 }
 
 function get_sales(post_data, btn_id){

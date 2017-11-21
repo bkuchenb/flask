@@ -16,7 +16,8 @@ application.config['db'] = {'host': inceff_host,
 @application.route('/set_list', methods=['POST'])
 def get_set_list() -> 'json':
     with UseDatabase(application.config['db']) as cursor:
-        letter = request.form['letter'] + '%'
+        if request.form['letter'] != '%':
+            letter = request.form['letter'] + '%'
         _SQL = ("SELECT tcf_sets.set_year, tcf_sets.set_name, "
                 "tcf_overstock.location "
                 "FROM tcf_sets "
@@ -56,6 +57,34 @@ def get_sales() -> 'json':
         else:
             temp_list = [{'total': '$0.00'} for row in results]
         return jsonify(temp_list)
+
+
+@application.route('/get_set_totals', methods=['POST'])
+def get_set_totals() -> 'json':
+    with UseDatabase(application.config['db']) as cursor:
+        # Get the set to search for from the json data.
+        entry = request.get_json()
+        search_term1 = entry['year'] + '%'
+        search_term2 = '%' + entry['year'] + '%'
+        _SQL = ("SELECT COUNT(*) "
+                "FROM tcf_inventory "
+                "JOIN tcf_card "
+                "ON tcf_inventory.card_id = tcf_card.card_id "
+                "JOIN tcf_set "
+                "ON tcf_card.set_id = tcf_set.set_id "
+                "JOIN tcf_set_category "
+                "ON tcf_set.set_id = tcf_set_category.set_id "
+                "JOIN tcf_category "
+                "ON tcf_category.category_id = tcf_set_category.category_id "
+                "WHERE tcf_set.set_year LIKE %s "
+                "OR tcf_set.set_name LIKE %s "
+                "OR tcf_card.card_name LIKE %s "
+                "OR tcf_card.card_number LIKE %s")
+        cursor.execute(_SQL, (search_term1, search_term2,
+                       search_term2, search_term2,))
+        results = cursor.fetchall()
+        temp_dict = {'total': results[0][0]}
+        return jsonify(temp_dict)
 
 
 @application.route('/search_dealer_home', methods=['POST'])
