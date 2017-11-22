@@ -118,30 +118,6 @@ html{
     width: 100%;
 }
 
-
-/* @media screen and (min-height: 700px){
-	.c3_L_default, .feedback{
-		display: inline-block;
-		margin: auto;
-		height: 30em;
-		position: absolute;
-		width: 19.75%;
-	}
-	.main{
-		display: inline-block;
-		height: 30em;
-		position: relative;
-		text-align: center;
-		width: 60%;
-	}
-	.main__display_tall{
-		border-bottom: 0.0625em solid black;
-		border-left: 0.0625em solid black;
-		border-right: 0.0625em solid black;
-		height: 26.25em;
-		overflow: scroll;
-	}
-} */
 .navbar__ul{
 	margin: 0;
 	padding: 0;
