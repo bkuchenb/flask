@@ -119,7 +119,7 @@ html{
 }
 
 
-@media screen and (min-height: 700px){
+/* @media screen and (min-height: 700px){
 	.c3_L_default, .feedback{
 		display: inline-block;
 		margin: auto;
@@ -141,7 +141,7 @@ html{
 		height: 26.25em;
 		overflow: scroll;
 	}
-}
+} */
 .navbar__ul{
 	margin: 0;
 	padding: 0;
