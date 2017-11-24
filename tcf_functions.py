@@ -10,7 +10,7 @@ import pprint
 import re
 import requests
 from bs4 import BeautifulSoup
-import MySQLdb
+import mysql.connector
 
 
 def insert_attribute(cursor: 'cursor', card_data: dict, index: int) -> str:
@@ -447,7 +447,7 @@ def add_card_data(card_data: dict, cursor: 'cursor') -> None:
         print('Something went wrong in add_card_data: {}'.format(err))
         pp = pprint.PrettyPrinter(indent=4)
         pp.pprint(card_data)
-    except MySQLdb.Error as err:
+    except mysql.connector.Error as err:
         # If the insert fails, print a message and the query.
         print('Something went wrong in add_card_data: {}'.format(err))
         pp = pprint.PrettyPrinter(indent=4)
