@@ -6,7 +6,8 @@ Created on Thu Nov  9 04:54:38 2017
 """
 
 
-import MySQLdb
+# import MySQLdb
+import mysql.connector
 
 
 class UseDatabase:
@@ -14,7 +15,8 @@ class UseDatabase:
         self.configuration = config
 
     def __enter__(self) -> 'cursor':
-        self.conn = MySQLdb.connect(**self.configuration)
+        # self.conn = MySQLdb.connect(**self.configuration)
+        self.conn = mysql.connector.connect(**self.configuration)
         self.cursor = self.conn.cursor()
         return self.cursor
 
