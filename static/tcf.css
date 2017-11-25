@@ -29,7 +29,7 @@ html{
 	}
 
 		.logo__button{
-			background-image: url('images/tcf_logo.png');
+			background-image: url('https://s3.amazonaws.com/zappa-master-bucket-static/tcf_logo.png');
 			background-color: #bbff99;
 			background-repeat: no-repeat;
 			border-style: none;
