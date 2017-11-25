@@ -166,11 +166,21 @@ def search_for_record() -> 'json':
 @application.route('/')
 @application.route('/tcf')
 def tcf_page() -> 'html':
-    return render_template('index.html', title='TCF')
+    if 'debug' in application.config:
+        return render_template('index.html', title='TCF',
+                               javascript='static/tcf.js',
+                               css='static/tcf.css',
+                               favicon='static/images/tcf_favicon.ico')
+    else:
+        return render_template('index.html', title='TCF',
+                               javascript='https://s3.amazonaws.com/zappa-master-bucket-static/tcf.js',
+                               css='https://s3.amazonaws.com/zappa-master-bucket-static/tcf.css',
+                               favicon='https://s3.amazonaws.com/zappa-master-bucket-static/tcf_favicon.ico')
 
 
 application.secret_key = '6yza3#2@GG5nm!'
 
 
 if __name__ == '__main__':
+    application.config['debug'] = True
     application.run(debug=True)
