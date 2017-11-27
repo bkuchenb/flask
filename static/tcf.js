@@ -8,19 +8,21 @@ var mode = '';
 var row_num = 0;
 var total_records = 0;
 var current_record = 1;
+
 // Make the logo_button reset the web page when clicked.
-document.getElementById('logo__button').addEventListener('click', function(event){
+document.getElementById('btn_logo').addEventListener('click', function(event){
 	event.preventDefault();
 	window.location.href = home;
 }, false);
+
 // Add an event listener to the Overstock button.
-document.getElementById('c3_L_r1_btn0').addEventListener('click', function(event){
+document.getElementById('btn_overstock').addEventListener('click', function(event){
 	event.preventDefault();
 	// Set the mode.
 	mode = 'overstock';
-	var header = document.getElementById('main__table-header');
-	if(header){
-		header.parentElement.removeChild(header);
+	var table_header = document.getElementById('main__table-header');
+	if(table_header){
+		table_header.parentElement.removeChild(table_header);
 	}
 	// Make sure the display area is the right height.
 	var display = document.getElementById('main__display');
@@ -30,14 +32,116 @@ document.getElementById('c3_L_r1_btn0').addEventListener('click', function(event
 	cr_btns_sport();
 }, false);
 
+// Add and event listener for the Download Inventory button.
+document.getElementById('btn_download-inventory').addEventListener('click', function(event){
+	event.preventDefault();
+	// Make sure the display area is the right height.
+	var display = document.getElementById('main__display');
+	display.className = 'main__display main__display_tall';
+	// Clear the display areas.
+	var temp_div = document.getElementById('main__table-header');
+	if(temp_div){
+		temp_div.innerHTML = '';
+		temp_div.className = '';
+	}
+	display.innerHTML = '';
+	document.getElementById('feedback').innerHTML = '';
+	document.getElementById('navbar').innerHTML = '';
+	// Reset the current_record global.
+	current_record = 1;
+	// Create the year buttons to allow the user to choose the year.
+	cr_btns_year();
+	// Set the mode to inventory.
+	mode = 'inventory';
+}, false);
+
+// Add and event listener for the Newly Added button.
+document.getElementById('btn_newly-added').addEventListener('click', function(event){
+	event.preventDefault();
+	// Clear the display areas.
+	var temp_div = document.getElementById('main__table-header');
+	if(temp_div){
+		temp_div.innerHTML = '';
+		temp_div.className = '';
+	}
+	document.getElementById('main__display').innerHTML = '';
+	document.getElementById('feedback').innerHTML = '';
+	document.getElementById('navbar').innerHTML = '';
+	// Reset the current_record global.
+	current_record = 1;
+}, false);
+
+// Add and event listener for the Sales Tax button.
+document.getElementById('btn_sales-tax').addEventListener('click', function(event){
+	event.preventDefault();
+	// Make sure the display area is the right height.
+	var display = document.getElementById('main__display');
+	display.className = 'main__display main__display_tall';
+	// Clear the display areas.
+	var temp_div = document.getElementById('main__table-header');
+	if(temp_div){
+		temp_div.innerHTML = '';
+		temp_div.className = '';
+	}
+	var display = document.getElementById('main__display');
+	display.innerHTML = '';
+	document.getElementById('feedback').innerHTML = '';
+	document.getElementById('navbar').innerHTML = '';
+	
+	// Create a user message.
+	var message = document.createElement('p');
+	message.className = 'display__p';
+	message.innerHTML = 'Select a dange range to calculate sales tax.';
+	
+	// Create two inputs to allow the user to choose dates.
+	var new_date = new Date();
+	var date_start_label = document.createElement('label');
+	date_start_label.className = 'display__label';
+	date_start_label.htmlFor = 'date_start';
+	date_start_label.innerHTML = 'From:';
+	var date_start = document.createElement('input');
+	date_start.id = 'date_start';
+	date_start.type = 'date';
+	new_date.setDate(new_date.getDate() - 7);
+	var value = new_date.getFullYear() + '-' +
+		(parseInt(new_date.getMonth()) + 1) + '-' +
+		new_date.getDate()
+	date_start.value = value;
+		
+	var date_end_label = document.createElement('label');
+	date_end_label.className = 'display__label';
+	date_end_label.htmlFor = 'date_end';
+	date_end_label.innerHTML = 'To:';
+	var date_end = document.createElement('input');
+	date_end.id = 'date_end';
+	date_end.type = 'date';
+	new_date.setDate(new_date.getDate() + 6);
+	value = new_date.getFullYear() + '-' +
+		(parseInt(new_date.getMonth()) + 1) + '-' +
+		new_date.getDate()
+	date_end.value = value;
+	
+	var temp_btn = document.createElement('button');
+	temp_btn.id = 'submit_sales_tax';
+	temp_btn.className = 'display__submit_display-block';
+	temp_btn.innerHTML = 'Submit';
+	
+	display.appendChild(message);
+	display.appendChild(date_start_label);
+	display.appendChild(date_start);
+	display.appendChild(date_end_label);
+	display.appendChild(date_end);
+	display.appendChild(temp_btn);
+}, false);
+
 // Add an event listener to the Sets button.
-document.getElementById('c3_L_r8_btn0').addEventListener('click', function(event){
+document.getElementById('btn_sets').addEventListener('click', function(event){
 	event.preventDefault();
 	// Set the mode.
 	mode = 'sets';
-	var header = document.getElementById('main__table-header');
-	if(header){
-		header.parentElement.removeChild(header);
+	var table_header = document.getElementById('main__table-header');
+	if(table_header){
+		table_header.parentElement.removeChild(table_header);
 	}
 	// Make sure the display area is the right height.
 	var display = document.getElementById('main__display');
@@ -46,33 +150,9 @@ document.getElementById('c3_L_r8_btn0').addEventListener('click', function(event
 	display.innerHTML = '';
 	cr_btns_year();
 }, false);
+
 // Create the sport buttons.
 cr_btns_sport();
-cL_btn_inventory(document.getElementById('c3_L_r5_btn0'))
-// Create and action listener for the Inventory button.
-function cL_btn_inventory(btn_temp){
-	btn_temp.addEventListener('click', function(event){
-		event.preventDefault();
-		// Make sure the display area is the right height.
-		var display = document.getElementById('main__display');
-		display.className = 'main__display main__display_tall';
-		// Clear the display areas.
-		var temp_div = document.getElementById('main__table-header');
-		if(temp_div){
-			temp_div.innerHTML = '';
-			temp_div.className = '';
-		}
-		display.innerHTML = '';
-		document.getElementById('feedback').innerHTML = '';
-		document.getElementById('navbar').innerHTML = '';
-		// Reset the current_record global.
-		current_record = 1;
-		// Create the year buttons to allow the user to choose the year.
-		cr_btns_year();
-		// Set the mode to inventory.
-		mode = 'inventory';
-	}, false);
-}
 
 function cL_btn_letter(btn_temp){
 	btn_temp.addEventListener('click', function(event){
@@ -110,18 +190,6 @@ function cL_btn_page(btn_temp){
 	}, false);
 }
 
-function cL_btn_page(btn_temp){
-	btn_temp.addEventListener('click', function(event){
-		event.preventDefault();
-		// Save the page number.
-		page = btn_temp.innerHTML;
-		current_record = (parseInt(page) * 100) - 99;
-		document.body.style.cursor = 'wait';
-		search_for_page(page);
-		btn_temp.className += ' btn_hidden';
-	}, false);
-}
-
 function cL_btn_sales(btn_temp){
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
@@ -131,7 +199,7 @@ function cL_btn_sales(btn_temp){
 		var cells = row.getElementsByClassName('td td1');
 		temp_obj = {'category': sport, 'set_year': year,
 		'set_name': cells[0].innerHTML};
-		get_sales(temp_obj, btn_temp.id);
+		get_set_sales(temp_obj, btn_temp.id);
 	}, false);
 }
 
@@ -194,7 +262,7 @@ function cr_btns_letter(){
 		var btn_temp = document.createElement('button');
 		//Add an action listener to each button.
 		cL_btn_letter(btn_temp);
-		btn_temp.className = 'medium green button';
+		btn_temp.className = 'button button-letter button-green';
 		if(btn_list[i] == ' '){
 			btn_temp.className += ' btn_hidden';
 		}
@@ -237,7 +305,7 @@ function cr_btns_page(temp_obj){
 		}
 		var btn_temp = document.createElement('button');
 		btn_temp.id = 'page_button_' + (i + 1);
-		btn_temp.className = 'large green button';
+		btn_temp.className = 'button button-page button-green';
 		btn_temp.innerHTML = i + 1;
 		// Add a listener to each button.
 		cL_btn_page(btn_temp);
@@ -286,7 +354,7 @@ function cr_btns_sport(){
 	var div_temp = '';
 	for(var i = 0; i < btn_list.length; i++){
 		var btn_temp = document.createElement('button');
-		btn_temp.className = 'xlarge green button';
+		btn_temp.className = 'button button-sport button-green ';
 		if(btn_list[i] == ' '){
 			btn_temp.className += ' btn_hidden';
 		}
@@ -318,7 +386,7 @@ function cr_btns_year(){
 		var btn_temp = document.createElement('button');
 		//Add a listener to each button.
 		cL_btn_year(btn_temp);
-		btn_temp.className = 'large green button';
+		btn_temp.className = 'button button-year button-green';
 		btn_temp.innerHTML = i;
 		//Create a new row after 10 buttons are created.
 		if(i % 10 == 0){
@@ -343,9 +411,9 @@ function cr_layout_tcf(column_names){
 	// Reset the global row_num variable.
 	row_num = 0;
 	//Clear the area where two tables will go.
-	var header = document.createElement('div');
-	header.id = 'main__table-header';
-	header.className = 'main__table-header';
+	var table_header = document.createElement('div');
+	table_header.id = 'main__table-header';
+	table_header.className = 'main__table-header';
 	var display = document.getElementById('main__display');
 	display.className = 'main__display main__display_short';
 	display.innerHTML = '';
@@ -369,8 +437,8 @@ function cr_layout_tcf(column_names){
 	//Add the elements to the layout.
 	temp_div_thead.appendChild(temp_div_tr);
 	temp_div_table.appendChild(temp_div_thead);
-	header.appendChild(temp_div_table);
-	document.getElementById('main').insertBefore(header, main__display);
+	table_header.appendChild(temp_div_table);
+	document.getElementById('main').insertBefore(table_header, main__display);
 	
 	//Create table2.
 	var temp_div_table = document.createElement('div');
@@ -568,7 +636,7 @@ function get_set_totals(){
 	xhttp.send(JSON.stringify({'year': year}));
 }
 
-function get_sales(post_data, btn_id){
+function get_set_sales(post_data, btn_id){
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function(){
 		if (xhttp.readyState == 4 && xhttp.status == 200){
@@ -580,7 +648,7 @@ function get_sales(post_data, btn_id){
 			temp_div.innerHTML = json_list[0]['total'];
 		}
 	}
-	xhttp.open("POST", "/get_sales", true);
+	xhttp.open("POST", "/get_set_sales", true);
 	xhttp.setRequestHeader("Content-type", "application/json");
 	xhttp.send(JSON.stringify(post_data));
 }

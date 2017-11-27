@@ -37,7 +37,7 @@ def get_set_list() -> 'json':
         return jsonify(temp_list)
 
 
-@application.route('/get_sales', methods=['POST'])
+@application.route('/get_set_sales', methods=['POST'])
 def get_sales() -> 'json':
     with UseDatabase(application.config['db']) as cursor:
         # Get the set to search for from the json data.
