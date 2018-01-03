@@ -1,208 +1,389 @@
-*{
+* {
+  /* border: 1px solid black; */
 	box-sizing: border-box;
 }
-html{
+
+body {
 	/* Create a light green background.*/
-	background-color: #bbff99;
+  background-color: #bbff99;
+  font-family: Veranda, Arial, Helvetica, sans-serif;
+  font-size: medium;
+	margin: 0;
+  overflow: hidden;
+	padding: 0;
 }
 
-.header{
-	display: flex;
-	flex-direction: row;
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
-	.contact-info_layout-default{
-		height: 8.5em;
-		padding: .5em 0 0 .5em;
-		width: 20%;
-	}
-
-		.contact-info__address-line{
-			margin: 0;
-			padding: 0;
-		}
-
-	.logo_layout-default{
-		height: 8.5em;
-		text-align: center;
-		width: 60%;
-	}
-
-		.logo__button_layout-default{
-			height: 98%;
-			width: 46.75em;
-		}
-		
-		.logo__button_style-default{
-			background-image: url(images/tcf_logo.png);
-			background-color: #bbff99;
-			background-repeat: no-repeat;
-			border-style: none;
-			cursor: pointer;
-		}
-
-	.header__right_layout-default{
-		height: 8.5em;
-		width: 20%;
-	}
-
-.navbar_layout-default{
-	height: 2.5em;
-	margin: 0.3125em 0.3125em 0.3125em 0;
-	padding-top: 0.5em;
-	text-align: center;
-	width: 100%;
+header {
+  display: flex;
+  justify-content: center;
 }
-
-.navbar_style-default{
-	/*Create a green background darker than the page background.*/
-	background-color: #5cd65c;
-	border-bottom: 0.0625em solid black;
-	border-top: 0.0625em solid black;
-}
-
-.body{
-	display: flex;
-	flex-direction: row;
-}
-
-.body_style-default{
-	border: 0.0625em solid black;
-}
-
-	.menu{
-		display: flex;
-		flex-direction: column;
+  
+  #contact-info {
+    display: none;
+    margin: 0 0 0 0.5em;
+		padding: 0.5em;
+    width: 30%;
 	}
-	
-	.menu_layout-default{
-		height: 24em;
-		text-align: left;
-		width: 20%;
+
+  #contact-info address {
+    line-height: 1.2;
+    margin: 0.5em 0 0 0;
+  }
+
+  #logo {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 0.5em;
+    width: 100%;
+  }
+
+  #logo a {
+    cursor: pointer;
+  }
+
+  #logo img {
+    border: none;
+    max-width: 100%;
+  }
+  
+  #navbar {
+    align-items: center;
+    /*Create a green background darker than the page background.*/
+    background-color: #5cd65c;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5em;
+    min-height: 3em;
+  }
+  
+  #navbar a {
+    cursor: pointer;
+    text-decoration: underline;
+    margin: 0 0 0 0.5em;
+  }
+
+	#icon {
+    cursor: pointer;
+    margin: 0 0 0 0.5em;
+  }
+  
+  .last_row {
+    display: flex;
+    /* Fill the remaining space. */
+    flex: 1;
+    padding: 0 0.5em;
+  }
+  
+  #menu {
+    align-items: stretch;
+    background-color: #bbff99;
+    border: 1px solid black;
+    display: none;
+    flex-direction: column;
+    /* float: left; */
+    /* justify-content: space-evenly; */
+    margin: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    /* padding: 0 0.5em 0.5em 0.5em; */
+    /* text-align: left; */
+    z-index: 1;
 	}
-	
-	.menu_style-default{
-		overflow-y: scroll;
-	}
-	
-		.menu__button{
-			font-size: 1em;
-			margin: 0.3125em 0 0 0.3125em;
-			padding: .2em 1em .4em;
-			width: 80%;
-		}
-		
-		.menu__div{
-			border-bottom: 0.00625em solid black;
-			border-top: 0.00625em solid black;
+  
+    #menu button {
+      margin: 0.5em;
+      min-height: 1.8em;
+    }
+    
+		h2 {
+      border-bottom: 1px solid black;
+			border-top: 1px solid black;
 			font-size: 1.5em;
 			font-weight: bold;
-			margin: 0.3125em 0 0 0;
-			padding: 0 0 0.3125em 0.3125em;
+      margin: 0.25em 0 0 0;
+      padding: 0.25em 0;
+      text-align: center;
+      width: 100%;
 		}
+    
+    #menu ul {
+      margin: 0.5em 0 0 0;
+      padding: 0;
+    }
+    
+    .menu_link {
+      list-style-type: none;
+      margin: 0.25em 0 0 0;
+      padding: 0;
+    }
 	
-	.main_layout-default{
-		height: 24em;
-		text-align: center;
-		width: 60%;
+	#main {
+    border: 1px solid black;
+    /* display: grid; */
+    /* Fill the remaining space. */
+    flex: 1;
+    line-height: 1.5;
+    overflow-y: scroll;
+    /* overflow-x: hidden; */
+    /* padding: 0 0.5em 0.5em 0.5em; */
 	}
-	
-		.main__display{
-			border-left: 0.0625em solid black;
-			border-right: 0.0625em solid black;
-			overflow-y: scroll;
-			padding-top: 0.3125em;
-		}
-		
-		.main__display_short{
-			height: 22.45em;
-			
-		}
-		
-		.main__display_tall{
-			height: 24em;
-		}
-			
-			.display__label{
-				margin: 0 0.3125em 0;
-			}
-			
-			.display__p{
-				font-size: 1.5em;
-				font-weight: bold;
-			}
-			
-			.display__submit_display-block{
-				display: block;
-			}
-	
-		.main__table-header{
-			border-bottom: 0.0625em solid black;
-			border-left: 0.0625em solid black;
-			border-right: 0.0625em solid black;
-		}
-	
-	.feedback{
-		height: 24em;
-		overflow-y: scroll;
-		padding: .5em 0 0 .5em;
-		text-align: left;
-		width: 20%;
+  
+    #wrapper_sport {
+      align-items: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      margin: 0.5em;
+    }
+    
+    #wrapper_letter, #wrapper_year {
+      align-items: center;
+      display: grid;
+      grid-column-gap: 0.1em;
+      grid-row-gap: 0.25em;
+      grid-template-columns: repeat(10, 10%);
+      justify-content: center;
+      padding: 0.5em 0 0 0;
+    }
+
+  #feedback {
+    border: 1px solid black;
+    grid-column-start: 16;
+    grid-column-end: 21;
+    grid-row-start: 8;
+    grid-row-end: 21;
+    margin: 0.5em 0.5em 0 0;
+    overflow-y: scroll;
+    visibility: hidden;
 	}
 
-.footer{
-	margin: 0;
-	position: relative;
-    text-align: center;
+@media only screen and (min-width: 681px) {
+  /* For tablets. */
 }
 
+@media only screen and (min-width: 1008px) {
+  header {
+    justify-content: flex-start;
+  }
+  
+  #icon {
+    display: none;
+  }
+  
+  #contact-info {
+    display: block;
+	}
+  
+  #logo {
+    width: 40%;
+  }
+  
+  #menu {
+    background-color: transparent;
+    display: flex;
+  }
+  
+  #main {
+    border-left: none;
+	}
+  
+  #wrapper_sport {
+      display: grid;
+      grid-column-gap: 0.5em;
+      grid-row-gap: 0.25em;
+      grid-template-columns: repeat(4, auto);
+      justify-content: center;
+    }
+    
+    #wrapper_letter, #wrapper_year {
+      grid-column-gap: 0.5em;
+      grid-row-gap: 0.25em;
+      grid-template-columns: repeat(10, auto);
+    }
+    
+    #wrapper_letter {
+      grid-template-columns: repeat(9, auto);
+    }
+    
+      .button-sport {
+        width: 6.5em;
+      }
+      
+      .button-letter, .button-year {
+        width: 3.5em;
+      }
+}
+
+.color-green:focus {
+  /* Active is +5% of main background-color. */
+	background-color: hsl(120, 100%, 30%);
+  /* Get lighter from top to bottom. */
+  /* First number is -5% smaller than second. */
+	background: linear-gradient(hsl(120, 100%, 25%),
+    hsl(120, 100%, 30%));
+  border-color: #ffffff;
+    /* Shadow and hover are -5% of background-color */
+  box-shadow: 0px 2px 0px hsl(120, 100%, 20%),
+    0px 1px 6px rgba(0,0,0,0.4),
+    inset 0px 1px 0px rgba(255,255,255,0.3),
+    inset 0px 0px 3px rgba(255,255,255,0.5);
+    transform: translate(0, 4px) rotateX(20deg);
+}
+
+.button-green {
+  /* green 25% */
+  background-color: #008000;
+  /* green 30% -> 25% */
+	background: linear-gradient(#009900, #008000);
+  /* green 30% */
+  border-color: #009900;
+  box-shadow: 0px 3px 0px #006600,
+    0px 3px 12px rgba(0,0,0,0.4),
+    inset 0px 1px 0px rgba(255,255,255,0.3),
+    inset 0px 0px 3px rgba(255,255,255,0.5);
+  color: #ffffff;
+}
+
+.button-green:active {
+  /* green 30% */
+	background: #009900;
+  /* green 25% -> 30% */
+	background: linear-gradient(#008000, #009900);
+  box-shadow: 0px 1.5px 0px #006600,
+    0px 1.5px 6px rgba(0,0,0,0.4),
+    inset 0px 1px 0px rgba(255,255,255,0.3),
+    inset 0px 0px 3px rgba(255,255,255,0.5);
+    transform: translate(0, 1.5px);
+}
+
+.button-green:focus {
+  outline: 0;
+}
+
+.button-green:hover {
+  /* green 20% */
+	background: #006600;
+}
+
+.button-letter, .button-page, .button-year {
+  align-self: center;
+  /* box-shadow: 0px 4px 0px #006600,
+    0px 3px 12px rgba(0,0,0,0.4),
+    inset 0px 1px 0px rgba(255,255,255,0.3),
+    inset 0px 0px 3px rgba(255,255,255,0.5); */
+	font-size: 1em;
+	height: 2em;
+  justify-self: center;
+	margin-bottom: 0.5em;
+	width: 4em;
+}
+
+.button-sport{
+  align-self: center;
+  font-size: 1.5em;
+  height: 2.5em;
+  justify-self: center;
+  margin-bottom: 0.5em;
+  width: 7em;
+}
+
+/* .main__table-header{
+  border-bottom: 0.0625em solid black;
+  border-left: 0.0625em solid black;
+  border-right: 0.0625em solid black;
+}
 .navbar__ul{
 	margin: 0;
 	padding: 0;
 }
-
 .navbar_li{
 	display: inline;
 	margin-right: 0.5em;
 	padding: 0;
 }
-.table{
-	font-size: 1em;
-	margin: auto;
-	text-align: left;
+ */
+table {
+	margin: 0.5em auto;
+  margin-bottom: 0;
+  table-layout: fixed;
+  width: 80%;
 }
-#thead_tr{
-	padding-right: 1em;
+
+thead th:nth-child(1), tbody td:nth-child(1) {
+	width: 15%;
 }
-.th{
-	/*Create a dark green background.*/
-	background-color: #008000;
-	border: 0.0625em solid black;
-	display: inline-block;
-	font-size: 1em;
-	font-weight: bold;
-	margin-bottom: 0.125em;
-	margin-left: 0.125em;
-	margin-top: 0.125em;
-	min-height: 1.3em;
-	text-align: center;
+
+thead th:nth-child(2), tbody td:nth-child(2) {
+	width: 50%;
 }
-.td{
-	background-color: white;
-	border: 0.0625em solid black;
-	display: inline-block;
-	font-size: 1em;
-	margin-bottom: 0.125em;
-	margin-left: 0.125em;
-	margin-top: 0.125em;
-	min-height: 1.3em;
-	padding-left: 0.375em;
-	text-align: left;
-	vertical-align: top;
+
+thead th:nth-child(3), tbody td:nth-child(3) {
+	width: 15%;
 }
-.tr:hover .td{
+
+thead th:nth-child(4), tbody td:nth-child(4) {
+	width: 20%;
+}
+
+#table2 {
+  margin-top: 0;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: hsl(0, 0%, 100%);
+}
+
+tbody tr:nth-child(even) {
   background-color: #5cd65c;
 }
+
+tr:hover td {
+  border: 1px solid hsl(120, 100%, 25%);
+}
+
+th {
+	/*Create a dark green background.*/
+	background-color: hsl(120, 100%, 25%);
+	border: 1px solid black;
+  cursor: pointer;
+  padding: 0.25em;
+}
+
+td {
+	background-color: transparent;
+	border: 1px solid black;
+  padding: 0.25em;
+}
+
+tbody tr td:nth-child(4) {
+  text-align: center;
+}
+
+.wrapper_table1, .wrapper_table2 {
+  max-height: 100%;
+  overflow-y: scroll;
+}
+
+.wrapper_table2 {
+  flex: 1;
+  padding: 0 0 0.5em 0;
+}
+
+.main_table {
+  display: flex;
+  /* Fill the remaining space. */
+  flex-direction: column;
+}
+  
 .td0, .td2, .td3{
 	width: 14%;
 }
@@ -227,81 +408,41 @@ html{
 #th1{
 	width: 54%;
 }
-.btn_hidden{
-    visibility: hidden;
-}
-.button{
-	border: 0.0625em solid #009900;
-	border-radius: .5em;
-	color: #ffffff;
-	cursor: pointer;
-	display: inline-block;
-	font-family: Arial, Helvetica, sans-serif;
-	font-weight: bold;
-	overflow: visible;
-	position: relative;
-}
-.button-green{
-	background-color: #008000;
-	box-shadow: 0 0 .25em #bababa, inset 0 0 .125em;
-}
-.button-green:hover{
-	background: #006600;
-}
-.green:active{
-	background: #009900;
-}
-
-.button-letter{
-	font-size: 1em;
-	height: 2.5em;
-	margin: 0.3125em 0 0 0.3125em;
-	width: 5em;
-}
-
-.button-page{
-	font-size: 1em;
-	height: 2em;
-	margin: 0.3125em 0 0 0.3125em;
-	width: 4em;
-}
-
-.button-sport{
-	font-size: 1.325em;
-	margin: 0.3125em 0 0 0.3125em;
-	height: 2.5em;
-	width: 7em;
-}
-
-.button-year{
-	font-size: 1em;
-	height: 2em;
-	margin: 0.3125em 0 0 0.3125em;
-	width: 4em;
-}
-
-.loader{
+.loader {
 	animation: spin 2s linear infinite;
 	border: 1em solid #f3f3f3; /* Light grey */
 	border-radius: 50%;
 	border-top: 1em solid #5cd65c; /* Dark green */
 	height: 4em;
 	margin-left: auto;
-    margin-right: auto;
+  margin-right: auto;
 	width: 4em;
 }
-@keyframes spin{
-	0%{transform: rotate(0deg);}
+
+@keyframes spin {
+	0@{transform: rotate(0deg);}
 	100%{transform: rotate(360deg);}
 }
+
 .card_name, .set_total{
 	margin: 0;
 	padding: 0;
 }
-.btn_sales{
+
+.btn_sales {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  height: 100%;
 	width: 100%;
 }
-.background-border{
+
+.btn_sales:focus {
+  outline: 0;
+}
+
+.background-border {
 	background-color: white;
-	border: 0.0625em solid black;
+	border: 1px solid black;
 }

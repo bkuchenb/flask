@@ -1,0 +1,261 @@
+* {
+  /* border: 1px solid black; */
+	box-sizing: border-box;
+}
+
+body {
+  /* LightBlue: = hsl(195, 53%, 79%) */
+  background-color: hsl(195, 53%, 90%);
+	background: linear-gradient(hsl(195, 53%, 90%),
+    hsl(195, 53%, 80%));
+  font-family: Veranda, Arial, Helvetica, sans-serif;
+  font-size: medium;
+	margin: 0;
+  overflow: hidden;
+	padding: 0;
+}
+
+#wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+  header {
+    display: flex;
+    justify-content: center;
+  }
+
+	#contact-info {
+    display: none;
+    margin: 0 0 0 0.5em;
+		padding: 0.5em;
+    width: 30%;
+	}
+
+  #contact-info address {
+    line-height: 1.2;
+    margin: 0.5em 0 0 0;
+  }
+
+  #logo {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    width: 40%;
+  }
+
+  #logo a {
+    cursor: pointer;
+  }
+
+  #logo img {
+    border: none;
+    max-width: 100%;
+  }
+
+  #navbar {
+    align-items: center;
+    background-color: hsl(195, 53%, 60%);
+    display: flex;
+    justify-content: flex-start;
+    margin: 0.5em;
+  }
+  
+  .nav_link {
+    cursor: pointer;
+    margin: 0;
+    padding: 0.5em;
+  }
+  
+    #home {
+      background-color: hsl(195, 53%, 50%);
+    }
+    
+    .nav_link_active {
+      background-color: hsl(195, 53%, 70%);
+      border-radius: 10px 10px 0 0;
+    }
+
+	#icon {
+    cursor: pointer;
+  }
+  
+  .last_row {
+    display: flex;
+    /* Fill the remaining space. */
+    flex: 1;
+    padding: 0 0.5em;
+  }
+  
+  #menu {
+    background-color: hsl(195, 53%, 90%);
+    border: 1px solid black;
+    display: none;
+    margin: 0;
+    overflow-y: scroll;
+    padding: 0.5em;
+    text-align: left;
+    z-index: 1;
+	}
+    
+		h2 {
+			border-bottom: 1px solid black;
+			font-size: 1.5em;
+			font-weight: bold;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      width: 100%;
+		}
+    
+    #menu ul {
+      margin: 0.5em 0 0 0;
+      padding: 0;
+    }
+    
+    .menu_link {
+      list-style-type: none;
+      margin: 0.25em 0 0 0;
+      padding: 0;
+    }
+	
+	#main {
+    border: 1px solid black;
+    /* Fill the remaining space. */
+    flex: 1;
+    line-height: 1.5;
+    overflow-y: scroll;
+    padding: 0.5em;
+	}
+  
+.flex_column {
+  display: flex;
+  flex-direction: column;
+  -webkit-perspective: 1200;
+}
+
+.button_column {
+  border: 1px solid black;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  margin: 0;
+  overflow-y: scroll;
+  padding: 0.5em;
+  text-align: center;
+  width: 45%;
+  -webkit-perspective: 1200;
+}
+
+.flex-row_button {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  /* -webkit-perspective: 1200; */
+}
+
+.button {
+  font-size: 1.5em;
+  margin: 0.5em 0 0 0;
+}
+
+.code_red {
+  color: hsl(330,100%,50%);
+}
+
+.code_green {
+  color: hsl(140, 100%, 50%);
+}
+
+.code_blue {
+  color: hsl(180, 100%, 50%);
+}
+
+.code_gray {
+  color: hsl(0, 0%, 75%);
+}
+
+.code_purple {
+  color: hsl(270, 65%, 75%);
+}
+
+@media only screen and (min-width: 681px) {
+  /* For tablets. */
+}
+
+@media only screen and (min-width: 1008px) {
+  header {
+    justify-content: flex-start;
+  }
+  
+  #icon {
+    display: none;
+  }
+  
+  #contact-info, #menu {
+    display: block;
+	}
+  
+  #menu {
+    background-color: transparent;
+  }
+  
+  #main {
+    border-left: none;
+	}
+}
+	
+
+.page {
+  background-color: hsl(0, 0%, 100%);
+  padding: 0.5em;
+  height: 98%;
+  margin: 0.1em;
+}
+
+.page:first-child {
+  opacity: 0.99; 
+}
+
+.page1 {
+  height: 100%;
+  margin: 0;
+}
+
+.page2 {
+  border: 1px solid blue;
+}
+
+.effect2 {
+  position: relative;
+}
+
+.effect2:before, .effect2:after {
+  z-index: -1;
+  position: absolute;
+  content: "";
+  bottom: 30px;
+  left: 10px;
+  width: 25%;
+  top: 90%;
+  background: #777;
+  -webkit-box-shadow: 0 15px 10px #777;
+  -moz-box-shadow: 0 15px 10px #777;
+  box-shadow: 0 15px 10px #777;
+  -webkit-transform: rotate(-3deg);
+  -moz-transform: rotate(-3deg);
+  -o-transform: rotate(-3deg);
+  -ms-transform: rotate(-3deg);
+  transform: rotate(-3deg);
+}
+
+.effect2:after {
+  -webkit-transform: rotate(3deg);
+  -moz-transform: rotate(3deg);
+  -o-transform: rotate(3deg);
+  -ms-transform: rotate(3deg);
+  transform: rotate(3deg);
+  right: 10px;
+  left: auto;
+}

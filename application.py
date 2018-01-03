@@ -1,23 +1,97 @@
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify
 
-from DatabaseContextManager import UseDatabase
+import boto3
+import pprint
+import json
+import mysql.connector
+import os
 import tcf_functions as tcf
 
 
 application = Flask(__name__)
 
-inceff_host = 'inceff.ctlel9cvjtqf.us-west-2.rds.amazonaws.com'
-application.config['db'] = {'host': inceff_host,
-                            'user': 'tcf',
-                            'password': 'R00thM!ck',
-                            'database': 'inceff', }
+application.secret_key = os.urandom(12)
+
+# Load the environment_variables.
+json_data = open('zappa_settings.json')
+env_vars = json.load(json_data)['master']['environment_variables']
+for key, val in env_vars.items():
+    os.environ[key] = val
+
+# Set the database configuration.
+application.config['db'] = {'host': os.environ.get('inceff_host'),
+                            'user': os.environ.get('inceff_user'),
+                            'password': os.environ.get('inceff_pw'),
+                            'database': os.environ.get('inceff_db'), }
+application.config['favicon'] = (os.environ.get('bucket_url') +
+                                 'tcf_favicon.ico')
+application.config['ico'] = (os.environ.get('bucket_url') + 'favicon.png')
+application.config['css'] = os.environ.get('bucket_url') + 'tcf.css'
+application.config['ecss'] = os.environ.get('bucket_url') + 'inceff.css'
+application.config['buttons'] = os.environ.get('bucket_url') + 'buttons.css'
+application.config['elogo'] = os.environ.get('bucket_url') + 'logo_inceff.png'
+application.config['logo'] = os.environ.get('bucket_url') + 'tcf_logo.png'
+application.config['js'] = os.environ.get('bucket_url') + 'tcf.js'
+application.config['ejs'] = os.environ.get('bucket_url') + 'inceff.js'
+application.config['redirect'] = '/master/admin'
 
 
-@application.route('/set_list', methods=['POST'])
+class UseDatabase:
+    def __init__(self, config: dict) -> None:
+        self.configuration = config
+
+    def __enter__(self) -> 'cursor':
+        # self.conn = MySQLdb.connect(**self.configuration)
+        self.conn = mysql.connector.connect(**self.configuration)
+        self.cursor = self.conn.cursor()
+        return self.cursor
+
+    def __exit__(self, exc_type, exc_value, exc_trace) -> None:
+        self.conn.commit()
+        self.cursor.close()
+        self.conn.close()
+
+
+def boto3_client(service: str) -> 'client':
+    """ This function creates a client that accesses an AWS service."""
+    region = os.environ.get('aws_region')
+    key_id = os.environ.get('aws_access_key_id')
+    access_key = os.environ.get('aws_secret_access_key')
+    return boto3.client(service, region_name=region,
+                        aws_access_key_id=key_id,
+                        aws_secret_access_key=access_key,)
+
+
+def update_static() -> None:
+    if 'debug' in application.config:
+        application.config['favicon'] = (application.config['favicon'].replace(
+                os.environ.get('bucket_url'), 'static/images/'))
+        application.config['ico'] = (application.config['ico'].replace(
+                os.environ.get('bucket_url'), 'static/favicon/'))
+        application.config['ecss'] = (application.config['ecss'].replace(
+                os.environ.get('bucket_url'), 'static/'))
+        application.config['css'] = (application.config['css'].replace(
+                os.environ.get('bucket_url'), 'static/'))
+        application.config['buttons'] = (application.config['buttons'].replace(
+                os.environ.get('bucket_url'), 'static/'))
+        application.config['elogo'] = (application.config['elogo'].replace(
+                os.environ.get('bucket_url'), 'static/images/'))
+        application.config['logo'] = (application.config['logo'].replace(
+                os.environ.get('bucket_url'), 'static/images/'))
+        application.config['ejs'] = (application.config['ejs'].replace(
+                os.environ.get('bucket_url'), 'static/'))
+        application.config['js'] = (application.config['js'].replace(
+                os.environ.get('bucket_url'), 'static/'))
+        application.config['redirect'] = (application.config['redirect'].replace('/master', ''))
+
+
+@application.route('/master/get_set_list', methods=['POST'])
+@application.route('/get_set_list', methods=['POST'])
 def get_set_list() -> 'json':
     with UseDatabase(application.config['db']) as cursor:
-        if request.form['letter'] != '%':
-            letter = request.form['letter'] + '%'
+        json = request.get_json()
+        if json['letter'] != '%':
+            letter = json['letter'] + '%'
         _SQL = ("SELECT tcf_sets.set_year, tcf_sets.set_name, "
                 "tcf_overstock.location "
                 "FROM tcf_sets "
@@ -27,7 +101,7 @@ def get_set_list() -> 'json':
                 "AND tcf_sets.set_year = %s "
                 "AND tcf_sets.set_name LIKE %s "
                 "ORDER BY tcf_sets.set_name ASC")
-        cursor.execute(_SQL, (request.form['category'], request.form['year'],
+        cursor.execute(_SQL, (json['category'], json['year'],
                               letter,))
         results = cursor.fetchall()
 
@@ -37,18 +111,19 @@ def get_set_list() -> 'json':
         return jsonify(temp_list)
 
 
+@application.route('/master/get_set_sales', methods=['POST'])
 @application.route('/get_set_sales', methods=['POST'])
 def get_sales() -> 'json':
     with UseDatabase(application.config['db']) as cursor:
         # Get the set to search for from the json data.
-        entry = request.get_json()
+        json = request.get_json()
         _SQL = ("SELECT SUM(total) as total "
                 "FROM tcf_orderdetails "
                 "WHERE tcf_orderdetails.sport = %s "
                 "AND tcf_orderdetails.year = %s "
                 "AND tcf_orderdetails.setName = %s ")
-        cursor.execute(_SQL, (entry['category'], entry['set_year'],
-                              entry['set_name'],))
+        cursor.execute(_SQL, (json['category'], json['set_year'],
+                              json['set_name'],))
         results = cursor.fetchall()
 
         # Turn the results into a list of dicts.
@@ -164,21 +239,29 @@ def search_for_record() -> 'json':
 
 
 @application.route('/')
+def inceff_page() -> 'html':
+    # Update the static file location.
+    update_static()
+    return render_template('inceff.html', title='Increase Efficiency',
+                           favicon=application.config['ico'],
+                           css=application.config['ecss'],
+                           buttons=application.config['buttons'],
+                           logo=application.config['elogo'],
+                           javascript=application.config['ejs'],
+                           )
+
+
 @application.route('/tcf')
 def tcf_page() -> 'html':
-    if 'debug' in application.config:
-        return render_template('index.html', title='TCF',
-                               javascript='static/tcf.js',
-                               css='static/tcf.css',
-                               favicon='static/images/tcf_favicon.ico')
-    else:
-        return render_template('index.html', title='TCF',
-                               javascript='https://s3.amazonaws.com/zappa-master-bucket-static/tcf.js',
-                               css='https://s3.amazonaws.com/zappa-master-bucket-static/tcf.css',
-                               favicon='https://s3.amazonaws.com/zappa-master-bucket-static/tcf_favicon.ico')
-
-
-application.secret_key = '6yza3#2@GG5nm!'
+    # Update the static file location.
+    update_static()
+    return render_template('index.html', title='TCF',
+                           favicon=application.config['favicon'],
+                           css=application.config['css'],
+                           buttons=application.config['buttons'],
+                           logo=application.config['logo'],
+                           javascript=application.config['js'],
+                           )
 
 
 if __name__ == '__main__':

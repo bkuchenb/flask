@@ -1,5 +1,4 @@
 // Global variables.
-var home = 'http://flask-env.picmpn3pqu.us-west-2.elasticbeanstalk.com/';
 var sport = '';
 var year = '';
 var letter = '';
@@ -9,10 +8,13 @@ var row_num = 0;
 var total_records = 0;
 var current_record = 1;
 
-// Make the logo_button reset the web page when clicked.
-document.getElementById('btn_logo').addEventListener('click', function(event){
-	event.preventDefault();
-	window.location.href = home;
+// Make the menu icon display the menu when clicked.
+document.getElementById('icon').addEventListener('click', function(event) {
+	var menu = document.getElementById('menu');
+  if (menu.style.display == '' || menu.style.display == 'none') {
+    menu.style.display = 'flex';
+  }
+  else { menu.style.display = 'none'; }
 }, false);
 
 // Add an event listener to the Overstock button.
@@ -20,16 +22,16 @@ document.getElementById('btn_overstock').addEventListener('click', function(even
 	event.preventDefault();
 	// Set the mode.
 	mode = 'overstock';
-	var table_header = document.getElementById('main__table-header');
-	if(table_header){
+  // Remove any navbar links.
+  clear_navbar_links();
+  /* var table_header = document.getElementById('main__table-header');
+  // Remove the table header.
+	if (table_header) {
 		table_header.parentElement.removeChild(table_header);
-	}
-	// Make sure the display area is the right height.
-	var display = document.getElementById('main__display');
-	display.className = 'main__display main__display_tall';
-	// Clear the display and add the sport buttons.
-	display.innerHTML = '';
-	cr_btns_sport();
+	} */
+	// Clear the main and add the sport buttons.
+	document.getElementById('main').innerHTML = '';
+	create_buttons_sport();
 }, false);
 
 // Add and event listener for the Download Inventory button.
@@ -148,37 +150,53 @@ document.getElementById('btn_sets').addEventListener('click', function(event){
 	display.className = 'main__display main__display_tall';
 	// Clear the display and add the year buttons.
 	display.innerHTML = '';
-	cr_btns_year();
+	create_buttons_year();
 }, false);
 
 // Create the sport buttons.
-cr_btns_sport();
+create_buttons_sport();
 
-function cL_btn_letter(btn_temp){
-	btn_temp.addEventListener('click', function(event){
-		event.preventDefault();
-		//Save the name of the chosen letter.
+function clear_navbar_links() {
+  if (document.getElementById('link_sport')) {
+    navbar.removeChild(document.getElementById('link_sport'));
+    sport = '';
+  }
+  if (document.getElementById('link_year')) {
+    navbar.removeChild(document.getElementById('link_year'));
+    year = '';
+  }
+  if (document.getElementById('link_letter')) {
+    navbar.removeChild(document.getElementById('link_letter'));
+    letter = '';
+  }
+}
+
+function cL_btn_letter(btn_temp) {
+	btn_temp.addEventListener('click', function(event) {
+    var main = document.getElementById('main');
+    var navbar = document.getElementById('navbar');
+		// Save the name of the chosen letter.
 		letter = btn_temp.innerHTML;
-		//Update the navbar.
-		document.getElementById('link_letter').innerHTML = letter;
-		document.getElementById('link_letter').addEventListener('click', function(event){
-			//Clear the buttons.
-			main__display.innerHTML = '';
-			//Create the letter buttons to allow the user to re-choose the letter.
-			cr_btns_letter();
+		// Update the navbar.
+    temp_a = create_node({ 'type': 'a', 'id': 'link_letter', 'innerHTML': letter });
+    temp_a.addEventListener('click', function(event) {
+      // Clear the buttons.
+      main.innerHTML = '';
+      // Create the letter buttons to allow the user to re-choose the letter.
+			create_buttons_letter();
+      letter = '';
+      // Remove the link_letter.
+      navbar.removeChild(document.getElementById('link_letter'));			
 		}, false);
-		//Clear the buttons.
-		document.getElementById('main__display').innerHTML = '';
-		var column_names = ['Year', 'Set', 'Location', 'Sales'];
-		//Create the tables needed to display the set data.
-		cr_layout_tcf(column_names);
-		//Get the sets that that correspond to the chosen buttons.
+    navbar.appendChild(temp_a);
+		// Clear the buttons.
+		main.innerHTML = '';
+		// Get the sets that that correspond to the chosen buttons.
 		get_set_list();
-		
 	}, false);
 }
 
-function cL_btn_page(btn_temp){
+function cL_btn_page(btn_temp) {
 	btn_temp.addEventListener('click', function(event){
 		event.preventDefault();
 		// Save the page number.
@@ -190,103 +208,96 @@ function cL_btn_page(btn_temp){
 	}, false);
 }
 
-function cL_btn_sales(btn_temp){
+function cL_btn_sales(btn_temp) {
 	btn_temp.addEventListener('click', function(event){
-		event.preventDefault();
 		// Get the set_name from column 1.
 		var row_num = btn_temp.id.replace('btn_sales', '');
-		var row = document.getElementById('tbody_tr' + row_num);
-		var cells = row.getElementsByClassName('td td1');
-		temp_obj = {'category': sport, 'set_year': year,
-		'set_name': cells[0].innerHTML};
+		var row = document.getElementById('tr' + row_num);
+		var cells = row.getElementsByTagName('td');
+    console.log(cells.length);
+		var temp_obj = {'category': sport, 'set_year': year,
+      'set_name': cells[1].innerHTML};
+    console.log(temp_obj);
 		get_set_sales(temp_obj, btn_temp.id);
 	}, false);
 }
 
-function cL_btn_sport(btn_temp){
-	btn_temp.addEventListener('click', function(event){
+function cL_btn_sport(btn_temp) {
+	btn_temp.addEventListener('click', function(event) {
 		event.preventDefault();
-		//Save the name of the chosen sport.
+    var main = document.getElementById('main');
+    var navbar = document.getElementById('navbar');
+		// Save the name of the chosen sport.
 		sport = btn_temp.innerHTML;
-		//Update the navbar.
-		document.getElementById('link_sport').innerHTML = sport;
-		document.getElementById('link_sport').addEventListener('click', function(event){
-			//Return to the homepage and reset all data.
-			window.location.href = home;
-		}, false);
-		//Clear the buttons.
-		document.getElementById('main__display').innerHTML = '';
-		//Create the year buttons.
-		cr_btns_year();
+		// Update the navbar.
+    temp_a = create_node({ 'type': 'a', 'id': 'link_sport', 'innerHTML': sport });
+    temp_a.addEventListener('click', function(event) {
+      // Clear the buttons.
+      main.innerHTML = '';
+      create_buttons_sport();
+      sport = '';
+      // Remove the link_sport.
+      navbar.removeChild(document.getElementById('link_sport'));
+      if (document.getElementById('link_year')) {
+        navbar.removeChild(document.getElementById('link_year'));
+        year = '';
+      }
+      if (document.getElementById('link_letter')) {
+        navbar.removeChild(document.getElementById('link_letter'));
+        letter = '';
+      }
+    }, false);
+		navbar.appendChild(temp_a);
+		// Clear the buttons.
+		main.innerHTML = '';
+		// Create the year buttons.
+		create_buttons_year();
 	}, false);
 }
 
-function cL_btn_year(btn_temp){
-	btn_temp.addEventListener('click', function(event){
+function cL_btn_year(btn_temp) {
+	btn_temp.addEventListener('click', function(event) {
 		event.preventDefault();
+    var main = document.getElementById('main');
+    var navbar = document.getElementById('navbar');
 		// Save the name of the chosen year.
 		year = btn_temp.innerHTML;
 		// Check to see if the mode is inventory.
-		if(mode == 'inventory'){
+		if (mode == 'inventory') {
 			// Get the number of cards listed on beckett for the search term.
 			search_dealer_home(1);
 		}
-		else if(mode == 'sets'){
+		else if (mode == 'sets') {
 			cr_loader();
 			// Get the number of cards  in the database for that year.
 			get_set_totals();
 		}
-		else{
+		else {
 			// Update the navbar.
-			document.getElementById('link_year').innerHTML = year;
-			document.getElementById('link_year').addEventListener('click', function(event){
+      temp_a = create_node({ 'type': 'a', 'id': 'link_year', 'innerHTML': year });
+			navbar.appendChild(temp_a);
+			temp_a.addEventListener('click', function(event) {
 				// Clear the buttons.
-				document.getElementById('main__display').innerHTML = '';
+				document.getElementById('main').innerHTML = '';
 				// Create the year buttons to allow the user to re-choose the year.
-				cr_btns_year();
+				create_buttons_year();
+        year = '';
+        // Remove the link_year.
+        navbar.removeChild(document.getElementById('link_year'));
+        if (document.getElementById('link_letter')) {
+          navbar.removeChild(document.getElementById('link_letter'));
+          letter = '';
+        }
 			}, false);
-			//Clear the buttons.
-			document.getElementById('main__display').innerHTML = '';
-			//Create the letter buttons.
-			cr_btns_letter();
+			// Clear the buttons.
+			document.getElementById('main').innerHTML = '';
+			// Create the letter buttons.
+			create_buttons_letter();
 		}
 	}, false);
 }
 
-function cr_btns_letter(){
-	var btn_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-	'M','N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', '%'];
-	var row = 0;
-	var div_temp = '';
-	for(var i = 0; i < btn_list.length; i++){
-		var btn_temp = document.createElement('button');
-		//Add an action listener to each button.
-		cL_btn_letter(btn_temp);
-		btn_temp.className = 'button button-letter button-green';
-		if(btn_list[i] == ' '){
-			btn_temp.className += ' btn_hidden';
-		}
-		btn_temp.innerHTML = btn_list[i];
-		//Create a new row after 7 buttons are created.
-		if(i % 7 == 0){
-			//Create a new row.
-			div_temp = document.createElement('div');
-			div_temp.id = 'btn_row_' + row;
-			div_temp.className = 'div_btn_letter';
-			row++;
-			//Add the button to the row.
-			div_temp.appendChild(btn_temp);
-			//Add the row the the center div.
-			document.getElementById('main__display').appendChild(div_temp);
-		}
-		else{
-			//Add the row the the center div.
-			div_temp.appendChild(btn_temp);
-		}
-	}	
-}
-
-function cr_btns_page(temp_obj){
+function cr_btns_page(temp_obj) {
 	// Save the total records in the global variable.
 	total_records = response.records
 	// Display the results in the navbar.
@@ -328,86 +339,125 @@ function cr_btns_page(temp_obj){
 	}	
 }
 
-function cr_btns_sales(){
+/* function create_buttons_sales() {
 	// Get all the td elements in the last column.
 	var td_list = document.getElementsByClassName('td3');
 	// Add a button to the cells.
-	for(var i = 0; i < td_list.length; i++){
-		var temp_btn = document.createElement('button');
-		temp_btn.id = 'btn_sales' + i;
-		temp_btn.className = 'btn_sales';
-		temp_btn.innerHTML = 'Sales';
+	for (var i = 0; i < td_list.length; i++) {
+		var btn_temp = create_node({ 'type': 'button', 'id': ('btn_sales' + i),
+      'className': 'btn_sales',
+      'innerHTML': 'Sales' });
 		cL_btn_sales(temp_btn);
 		td_list[i].appendChild(temp_btn);
 	}
+} */
+
+function create_buttons_letter() {
+	var btn_list = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+	                'M','N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+                  'Y', 'Z'];
+	var temp_div = create_node({ 'type': 'div', 'id': 'wrapper_letter' });
+	for (var i = 0; i < btn_list.length; i++) {
+		var btn_temp = create_node({ 'type': 'button',
+      'className': 'button button-letter color-green shape-rounded',
+      'innerHTML': btn_list[i] });
+		// Add a listener to each button.
+		cL_btn_letter(btn_temp);
+		// Add the button to the main div.
+    temp_div.appendChild(btn_temp);
+	}
+  document.getElementById('main').appendChild(temp_div);
 }
 
-function cr_btns_sport(){
-	// Create the navbar list.
-	cr_navbar_list();
+function create_buttons_sport() {
 	var btn_list = ['Baseball', 'Football', 'Basketball', 'Hockey',
-						  'Nonsports', 'Multisport', 'Racing', 'Wrestling',
-						  'Soccer', 'Golf', 'Magic', 'YuGiOh',
-						  'Pokemon', 'Gaming', 'Diecast', ' '];
-	// Used to name the button rows.
-	var row = 0;
-	var div_temp = '';
-	for(var i = 0; i < btn_list.length; i++){
-		var btn_temp = document.createElement('button');
-		btn_temp.className = 'button button-sport button-green ';
-		if(btn_list[i] == ' '){
-			btn_temp.className += ' btn_hidden';
-		}
-		btn_temp.innerHTML = btn_list[i];
+						      'Nonsports', 'Multisport', 'Racing', 'Wrestling',
+						      'Soccer', 'Golf', 'Magic', 'YuGiOh',
+						      'Pokemon', 'Gaming', 'Diecast'];
+  var temp_div = create_node({ 'type': 'div', 'id': 'wrapper_sport' });
+	for (var i = 0; i < btn_list.length; i++) {
+		var btn_temp = create_node({ 'type': 'button',
+      'className': 'button button-sport color-green shape-rounded',
+      'innerHTML': btn_list[i] });
 		// Add a listener to each button.
 		cL_btn_sport(btn_temp);
-		// Create a new row after 4 buttons are created.
-		if(i % 4 == 0){
-			div_temp = document.createElement('div');
-			div_temp.id = 'btn_row_' + row;
-			div_temp.className = 'div_btn_sport';
-			row++;
-			// Add the button to the row.
-			div_temp.appendChild(btn_temp);
-			// Add the row to the center div.
-			document.getElementById('main__display').appendChild(div_temp);
-		}
-		else{
-			// Add the button to the row.
-			div_temp.appendChild(btn_temp);
-		}
-	}
+    // Add the button to the main div.
+    temp_div.appendChild(btn_temp);
+  }
+  document.getElementById('main').appendChild(temp_div);
 }
 
-function cr_btns_year(){
+function create_buttons_year() {
 	var row = 0;
-	var div_temp = '';
-	for(var i = 1930; i < 2020; i++){
-		var btn_temp = document.createElement('button');
-		//Add a listener to each button.
+	var temp_div = create_node({ 'type': 'div', 'id': 'wrapper_year' });
+	for (var i = 1930; i < 2020; i++) {
+		var btn_temp = create_node({ 'type': 'button',
+      'className': 'button button-year color-green shape-rounded',
+      'innerHTML': i });
+		// Add a listener to each button.
 		cL_btn_year(btn_temp);
-		btn_temp.className = 'button button-year button-green';
-		btn_temp.innerHTML = i;
-		//Create a new row after 10 buttons are created.
-		if(i % 10 == 0){
-			//Create a new row.
-			div_temp = document.createElement('div');
-			div_temp.id = 'btn_row_' + row;
-			div_temp.className = 'div_btn_year';
-			row++;
-			//Add the button to the row.
-			div_temp.appendChild(btn_temp);
-			//Add the row to the center div.
-			document.getElementById('main__display').appendChild(div_temp);
-		}
-		else{
-			//Add the button to the row.
-			div_temp.appendChild(btn_temp);
-		}
-	}	
+		// Add the button to the main div.
+    temp_div.appendChild(btn_temp);
+	}
+  document.getElementById('main').appendChild(temp_div);
 }
 
-function cr_layout_tcf(column_names){
+function create_table_overstock(json_list) {
+  var main = document.getElementById('main');
+  var temp_div = create_node({ 'type': 'div', 'className': 'wrapper_table1' });
+	var table = create_node({ 'type': 'table', 'id': 'table1' });
+  var thead = create_node({ 'type': 'thead' });
+  var temp_tr = create_node({ 'type': 'tr' });
+	// Create the cells for the thead_row.
+  var column_names = ['Year', 'Set', 'Location', 'Sales'];
+	for (var i = 0; i < column_names.length; i++) {
+		var temp_th = create_node({ 'type': 'th',
+      'innerHTML': column_names[i] });
+    // Make the headings sort the columns when clicked.
+    temp_th.addEventListener('click', function(event){
+      var tbody = document.getElementById('tbody');
+      main.innerHTML = '';
+    }, false);
+		temp_tr.appendChild(temp_th);
+	}
+	// Add the elements to the layout.
+	thead.appendChild(temp_tr);
+	table.appendChild(thead);
+  
+  // This creates two tabels in order to freeze the thead.
+  temp_div.appendChild(table);
+  main.appendChild(temp_div);
+  temp_div = create_node({ 'type': 'div', 'className': 'wrapper_table2' });
+  table = create_node({ 'type': 'table', 'id': 'table2' });
+  
+  var tbody = create_node({ 'type': 'tbody' });
+  // Create the rows.
+  for (var i = 0; i < json_list.length; i++) {
+    temp_tr = create_node({ 'type': 'tr', 'id': ('tr' + i) });
+    var temp_td = create_node({ 'type': 'td', 'innerHTML': json_list[i]['set_year'] });
+    temp_tr.appendChild(temp_td);
+    temp_td = create_node({ 'type': 'td', 'innerHTML': json_list[i]['set_name'] });
+    temp_tr.appendChild(temp_td);
+    temp_td = create_node({ 'type': 'td', 'innerHTML': json_list[i]['location'] });
+    temp_tr.appendChild(temp_td);
+    temp_td = create_node({ 'type': 'td', 'id': ('td' + i) });
+    var temp_btn = create_node({ 'type': 'button', 'id': ('btn_sales' + i),
+      'className': 'btn_sales', 'innerHTML': 'Sales' });
+		cL_btn_sales(temp_btn);
+    temp_td.appendChild(temp_btn);
+    temp_tr.appendChild(temp_td);
+    tbody.appendChild(temp_tr);
+  }
+  table.appendChild(tbody);
+  /* document.getElementById('main').appendChild(table); */
+  // This creates two tabels in order to freeze the thead.
+  temp_div.appendChild(table);
+  main.appendChild(temp_div);
+  main.classList.toggle('main_table');
+  main.style.overflow = 'hidden';
+}
+
+/* function cr_layout_tcf_org(column_names) {
 	// Reset the global row_num variable.
 	row_num = 0;
 	//Clear the area where two tables will go.
@@ -449,27 +499,9 @@ function cr_layout_tcf(column_names){
 	//Add the elements to the layout.
 	temp_div_table.appendChild(temp_div_tbody);
 	display.appendChild(temp_div_table);
-}
+} */
 
-function cr_navbar_list(){
-	// Clear the navbar.
-	document.getElementById('navbar').innerHTML = '';
-	var id_list = ['link_sport', 'link_year', 'link_letter',
-	'link_set'];
-	var temp_ul = document.createElement('ul');
-	temp_ul.className = 'navbar__ul';
-	for(var i = 0; i < id_list.length; i++){
-		var temp_li = document.createElement('li');
-		temp_li.className = 'navbar_li';
-		var temp_a = document.createElement('a');
-		temp_a.id = id_list[i];
-		temp_li.appendChild(temp_a);
-		temp_ul.appendChild(temp_li);
-	}
-	navbar.appendChild(temp_ul);
-}
-
-function cr_loader(){
+function cr_loader() {
 	// Clear the buttons.
 	var display = document.getElementById('main__display');
 	display.innerHTML = '';
@@ -480,7 +512,7 @@ function cr_loader(){
 	display.appendChild(temp_div);
 }
 
-function cr_row_tcf(temp_list){
+/* function cr_row_tcf(temp_list) {
 	//Create a new row.
 	var temp_div_tr = document.createElement('div');
 	temp_div_tr.id = 'tbody_tr' + row_num;
@@ -503,9 +535,24 @@ function cr_row_tcf(temp_list){
 	document.getElementById('tbody').appendChild(temp_div_tr);
 	//Update the row number.
 	row_num++;
+} */
+
+function create_node(obj) {
+	var element = document.createElement(obj.type);
+	if (obj.alt) { element.alt = obj.alt; }
+  if (obj.autofocus) { element.autofocus = obj.autofocus; }
+  if (obj.backgroundImage) { element.style.backgroundImage = obj.backgroundImage; }
+  if (obj.className) { element.className = obj.className; }
+  if (obj.htmlFor) { element.htmlFor = obj.htmlFor; }
+  if (obj.href) { element.href = obj.href; }
+  if (obj.id) { element.id = obj.id; }
+	if (obj.innerHTML) { element.innerHTML = obj.innerHTML; }
+	if (obj.src) { element.src = obj.src; }
+  if (obj.input_type) { element.type = obj.input_type; }	
+	return element;
 }
 
-function display_result(response){
+function display_result(response) {
 	// Get the display area.
 	var feedback = document.getElementById('feedback');
 	// Create a p element and display the card just added.
@@ -535,7 +582,7 @@ function display_result(response){
 	}
 }
 
-function display_set_totals(response){
+function display_set_totals(response) {
 	// Get the display area.
 	var feedback = document.getElementById('feedback');
 	// Create a p element and display the card just added.
@@ -546,7 +593,7 @@ function display_set_totals(response){
 	document.getElementById('main__display').innerHTML = '';
 }
 
-function search_dealer_home(){
+function search_dealer_home() {
 	// Show the loader while the server is working.
 	cr_loader();
 	var xhttp = new XMLHttpRequest();
@@ -563,7 +610,7 @@ function search_dealer_home(){
 	xhttp.send(post_data);
 }
 
-function search_for_page(pg){
+function search_for_page(pg) {
 	var xhttp = new XMLHttpRequest();
 	var post_data = 'year=' + year + '&page=' + pg;
 	xhttp.onreadystatechange = function(){
@@ -584,7 +631,7 @@ function search_for_page(pg){
 	xhttp.send(post_data);
 }
 
-function search_for_record(record){
+function search_for_record(record) {
 	var xhttp = new XMLHttpRequest();
 	var post_data = record
 	xhttp.onreadystatechange = function(){
@@ -599,7 +646,7 @@ function search_for_record(record){
 	xhttp.send(JSON.stringify(post_data));
 }
 
-function get_set_list(){
+/* function get_set_list_org() {
 	var xhttp = new XMLHttpRequest();
 	var post_data = 'category=' + sport + '&year=' + year + '&letter=' + letter;
 	xhttp.onreadystatechange = function(){
@@ -607,21 +654,52 @@ function get_set_list(){
 			// Get the set list with sales totals.
 			var json_list = JSON.parse(xhttp.responseText);
 			// Display the results.
+      var column_names = ['Year', 'Set', 'Location', 'Sales'];
+      // Create the tables needed to display the set data.
+      create_table_overstock(column_names);
 			for(var i = 0; i < json_list.length; i++){
 				var temp_list = [json_list[i]['set_year'],
 				json_list[i]['set_name'], json_list[i]['location']]
 				cr_row_tcf(temp_list);
 			}
 			// Add buttons that will get sales data.
-			cr_btns_sales();
+			create_buttons_sales();
 		}
 	}
 	xhttp.open("POST", "/set_list", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send(post_data);
-}
+} */
 
-function get_set_totals(){
+function get_set_list() {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function(){
+		if (xhttp.readyState == 4 && xhttp.status == 200){
+			// Get the set list with sales totals.
+			var json_list = JSON.parse(xhttp.responseText);
+			// Display the results.
+      var column_names = ['Year', 'Set', 'Location', 'Sales'];
+      // Create the tables needed to display the set data.
+      create_table_overstock(json_list);
+		}
+    // Simulate data if database is unavailable. Used for debugging layout.
+    else {
+      var json_list = [{ 'category': 'Baseball', 'set_year': 1990, 'set_name': 'Topps' },
+      { 'category': 'Baseball', 'set_year': 1991, 'set_name': 'Topps' },
+      { 'category': 'Baseball', 'set_year': 1992, 'set_name': 'Topps' }];
+			// Display the results.
+      var column_names = ['Year', 'Set', 'Location', 'Sales'];
+      // Create the tables needed to display the set data.
+      create_table_overstock(json_list);
+    }
+	}
+  xhttp.open('POST', '/master/get_set_list', true);
+	xhttp.setRequestHeader('Content-type', 'application/json');
+	xhttp.send(JSON.stringify({ 'category': sport, 'year': year,
+                              'letter': letter }));
+}
+	
+function get_set_totals() {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function(){
 		if(xhttp.readyState == 4 && xhttp.status == 200){
@@ -636,24 +714,23 @@ function get_set_totals(){
 	xhttp.send(JSON.stringify({'year': year}));
 }
 
-function get_set_sales(post_data, btn_id){
+function get_set_sales(json, btn_id) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function(){
 		if (xhttp.readyState == 4 && xhttp.status == 200){
 			// Get the set list with sales totals.
 			var json_list = JSON.parse(xhttp.responseText);
-			console.log(json_list[0]['total']);
-			var temp_div = document.getElementById(btn_id).parentElement;
-			temp_div.className = temp_div.className + ' background-border';
-			temp_div.innerHTML = json_list[0]['total'];
+			var temp_td = document.getElementById(btn_id).parentElement;
+			temp_td.classList.toggle = 'background-border';
+			temp_td.innerHTML = json_list[0]['total'];
 		}
 	}
-	xhttp.open("POST", "/get_set_sales", true);
+	xhttp.open("POST", "/master/get_set_sales", true);
 	xhttp.setRequestHeader("Content-type", "application/json");
-	xhttp.send(JSON.stringify(post_data));
+	xhttp.send(JSON.stringify(json));
 }
 
-function create_table(parent_node_id, column_names, json_list, json_list_keys){
+function create_table(parent_node_id, column_names, json_list, json_list_keys) {
 	//Clear the area where the table will go.
 	var parent_node = document.getElementById(parent_node_id);
 	parent_node.innerHTML = '';
