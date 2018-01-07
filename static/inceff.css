@@ -130,13 +130,21 @@ body {
 	}
   
 .flex_column {
+  align-items: center;
+  border: 1px solid black;
+  border-left: none;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  overflow-y: scroll;
+  padding: 0.5em;
+  width: 45%;
   -webkit-perspective: 1200;
 }
 
 .button_column {
   border: 1px solid black;
+  border-left: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-evenly;
@@ -155,9 +163,35 @@ body {
   /* -webkit-perspective: 1200; */
 }
 
-.button {
+.button_gallery {
+  border: 1px solid;
+  border-radius: 6px;
+	cursor: pointer;
+	font-family: Veranda, Arial, Helvetica, sans-serif;
   font-size: 1.5em;
+	font-weight: bold;
+  height: 60px;
   margin: 0.5em 0 0 0;
+  /* This tilts the button back 20 degrees.
+  To be able to work, the parent element must
+    have -webkit-perspective: set. */
+  transform: rotateX(20deg);
+  width: 120px;
+}
+
+.button_gallery:focus {
+  outline: 0;
+}
+
+.label_range {
+  display: inline-block;
+  margin: 0 0.5em 0 0;
+  text-align: right;
+  width: 150px;
+}
+
+.range {
+  width: 120px;
 }
 
 .code_red {
@@ -178,6 +212,10 @@ body {
 
 .code_purple {
   color: hsl(270, 65%, 75%);
+}
+
+.code_yellow {
+  color: hsl(60, 100%, 45%);
 }
 
 @media only screen and (min-width: 681px) {
