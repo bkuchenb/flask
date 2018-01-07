@@ -9,149 +9,24 @@ var total_records = 0;
 var current_record = 1;
 
 // Make the menu icon display the menu when clicked.
-document.getElementById('icon').addEventListener('click', function(event) {
-	var menu = document.getElementById('menu');
-  if (menu.style.display == '' || menu.style.display == 'none') {
-    menu.style.display = 'flex';
-  }
-  else { menu.style.display = 'none'; }
-}, false);
+var icon = document.getElementById('icon');
+icon.addEventListener('click', display_menu, false);
 
-// Add an event listener to the Overstock button.
-document.getElementById('btn_overstock').addEventListener('click', function(event){
-	event.preventDefault();
-	// Set the mode.
-	mode = 'overstock';
-  // Remove any navbar links.
-  clear_navbar_links();
-  /* var table_header = document.getElementById('main__table-header');
-  // Remove the table header.
-	if (table_header) {
-		table_header.parentElement.removeChild(table_header);
-	} */
-	// Clear the main and add the sport buttons.
-	document.getElementById('main').innerHTML = '';
-	create_buttons_sport();
-}, false);
+// Add event listeners to the menu buttons.
+var temp_btn = document.getElementById('btn_overstock');
+temp_btn.addEventListener('click', set_mode.bind(null, 'overstock'), false);
 
-// Add and event listener for the Download Inventory button.
-document.getElementById('btn_download-inventory').addEventListener('click', function(event){
-	event.preventDefault();
-	// Make sure the display area is the right height.
-	var display = document.getElementById('main__display');
-	display.className = 'main__display main__display_tall';
-	// Clear the display areas.
-	var temp_div = document.getElementById('main__table-header');
-	if(temp_div){
-		temp_div.innerHTML = '';
-		temp_div.className = '';
-	}
-	display.innerHTML = '';
-	document.getElementById('feedback').innerHTML = '';
-	document.getElementById('navbar').innerHTML = '';
-	// Reset the current_record global.
-	current_record = 1;
-	// Create the year buttons to allow the user to choose the year.
-	cr_btns_year();
-	// Set the mode to inventory.
-	mode = 'inventory';
-}, false);
+temp_btn = document.getElementById('btn_download-inventory');
+temp_btn.addEventListener('click', set_mode.bind(null, 'inventory'), false);
 
-// Add and event listener for the Newly Added button.
-document.getElementById('btn_newly-added').addEventListener('click', function(event){
-	event.preventDefault();
-	// Clear the display areas.
-	var temp_div = document.getElementById('main__table-header');
-	if(temp_div){
-		temp_div.innerHTML = '';
-		temp_div.className = '';
-	}
-	document.getElementById('main__display').innerHTML = '';
-	document.getElementById('feedback').innerHTML = '';
-	document.getElementById('navbar').innerHTML = '';
-	// Reset the current_record global.
-	current_record = 1;
-}, false);
+temp_btn = document.getElementById('btn_newly-added');
+temp_btn.addEventListener('click', set_mode.bind(null, 'newly_added'), false);
 
-// Add and event listener for the Sales Tax button.
-document.getElementById('btn_sales-tax').addEventListener('click', function(event){
-	event.preventDefault();
-	// Make sure the display area is the right height.
-	var display = document.getElementById('main__display');
-	display.className = 'main__display main__display_tall';
-	// Clear the display areas.
-	var temp_div = document.getElementById('main__table-header');
-	if(temp_div){
-		temp_div.innerHTML = '';
-		temp_div.className = '';
-	}
-	var display = document.getElementById('main__display');
-	display.innerHTML = '';
-	document.getElementById('feedback').innerHTML = '';
-	document.getElementById('navbar').innerHTML = '';
-	
-	// Create a user message.
-	var message = document.createElement('p');
-	message.className = 'display__p';
-	message.innerHTML = 'Select a dange range to calculate sales tax.';
-	
-	// Create two inputs to allow the user to choose dates.
-	var new_date = new Date();
-	var date_start_label = document.createElement('label');
-	date_start_label.className = 'display__label';
-	date_start_label.htmlFor = 'date_start';
-	date_start_label.innerHTML = 'From:';
-	var date_start = document.createElement('input');
-	date_start.id = 'date_start';
-	date_start.type = 'date';
-	new_date.setDate(new_date.getDate() - 7);
-	var value = new_date.getFullYear() + '-' +
-		(parseInt(new_date.getMonth()) + 1) + '-' +
-		new_date.getDate()
-	date_start.value = value;
-		
-	var date_end_label = document.createElement('label');
-	date_end_label.className = 'display__label';
-	date_end_label.htmlFor = 'date_end';
-	date_end_label.innerHTML = 'To:';
-	var date_end = document.createElement('input');
-	date_end.id = 'date_end';
-	date_end.type = 'date';
-	new_date.setDate(new_date.getDate() + 6);
-	value = new_date.getFullYear() + '-' +
-		(parseInt(new_date.getMonth()) + 1) + '-' +
-		new_date.getDate()
-	date_end.value = value;
-	
-	var temp_btn = document.createElement('button');
-	temp_btn.id = 'submit_sales_tax';
-	temp_btn.className = 'display__submit_display-block';
-	temp_btn.innerHTML = 'Submit';
-	
-	display.appendChild(message);
-	display.appendChild(date_start_label);
-	display.appendChild(date_start);
-	display.appendChild(date_end_label);
-	display.appendChild(date_end);
-	display.appendChild(temp_btn);
-}, false);
+temp_btn = document.getElementById('btn_sales-tax');
+temp_btn.addEventListener('click', get_sales_tax, false);
 
-// Add an event listener to the Sets button.
-document.getElementById('btn_sets').addEventListener('click', function(event){
-	event.preventDefault();
-	// Set the mode.
-	mode = 'sets';
-	var table_header = document.getElementById('main__table-header');
-	if(table_header){
-		table_header.parentElement.removeChild(table_header);
-	}
-	// Make sure the display area is the right height.
-	var display = document.getElementById('main__display');
-	display.className = 'main__display main__display_tall';
-	// Clear the display and add the year buttons.
-	display.innerHTML = '';
-	create_buttons_year();
-}, false);
+temp_btn = document.getElementById('btn_sets');
+temp_btn.addEventListener('click', set_mode.bind(null, 'sets'), false);
 
 // Create the sport buttons.
 create_buttons_sport();
@@ -414,10 +289,29 @@ function create_table_overstock(json_list) {
 		var temp_th = create_node({ 'type': 'th',
       'innerHTML': column_names[i] });
     // Make the headings sort the columns when clicked.
-    temp_th.addEventListener('click', function(event){
-      var tbody = document.getElementById('tbody');
-      main.innerHTML = '';
-    }, false);
+    temp_th.addEventListener('click', sort_table.bind(null, i), false);
+      /*var tbody = document.getElementById('tbody');
+      var tr_list = tbody.getElementsByClassName('tr');
+      console.log(tr_list.length);
+       station_data = station_data.sort(function compare(a,b){
+        if (order == 'descending') {
+          var temp = a[index].localeCompare(b[index], undefined,
+            { numeric: true, sensitivity: 'base' });
+          if (temp == 1) { return -1; }
+          else if (temp == -1) { return 1; }
+          else { return 0; }
+        }
+        else {
+          return(a[index].localeCompare(b[index], undefined,
+            { numeric: true, sensitivity: 'base' }));
+        }
+      });
+      if (order == 'descending') {
+        order = 'ascending';
+      }
+      else {
+        order = 'descending';
+      }*/
 		temp_tr.appendChild(temp_th);
 	}
 	// Add the elements to the layout.
@@ -449,8 +343,8 @@ function create_table_overstock(json_list) {
     tbody.appendChild(temp_tr);
   }
   table.appendChild(tbody);
-  /* document.getElementById('main').appendChild(table); */
-  // This creates two tabels in order to freeze the thead.
+  
+  // Add the second table.
   temp_div.appendChild(table);
   main.appendChild(temp_div);
   main.classList.toggle('main_table');
@@ -543,13 +437,24 @@ function create_node(obj) {
   if (obj.autofocus) { element.autofocus = obj.autofocus; }
   if (obj.backgroundImage) { element.style.backgroundImage = obj.backgroundImage; }
   if (obj.className) { element.className = obj.className; }
-  if (obj.htmlFor) { element.htmlFor = obj.htmlFor; }
   if (obj.href) { element.href = obj.href; }
+  if (obj.htmlFor) { element.htmlFor = obj.htmlFor; }
   if (obj.id) { element.id = obj.id; }
 	if (obj.innerHTML) { element.innerHTML = obj.innerHTML; }
+  if (obj.input_type) { element.type = obj.input_type; }
 	if (obj.src) { element.src = obj.src; }
-  if (obj.input_type) { element.type = obj.input_type; }	
+  if (obj.value) { element.value = obj.value; }	
 	return element;
+}
+
+function display_menu() {
+	var menu = document.getElementById('menu');
+  if (menu.style.display == '' || menu.style.display == 'none') {
+    menu.style.display = 'flex';
+  }
+  else {
+    menu.style.display = 'none';
+  }
 }
 
 function display_result(response) {
@@ -671,6 +576,61 @@ function search_for_record(record) {
 	xhttp.send(post_data);
 } */
 
+function get_sales_tax() {
+	// Create a user message.
+	var message = create_node({ 'type': 'p',
+      'innerHTML': 'Select a dange range to calculate sales tax.' });
+	
+  // Get the date for 7 days ago and format it for the date picker.
+	var new_date = new Date();
+  new_date.setDate(new_date.getDate() - 7);
+	var value = [new_date.getFullYear(), (parseInt(new_date.getMonth()) + 1),
+		new_date.getDate()];
+  for (var i = 0; i < value.length; i++) {
+    if (String(value[i]).length === 1) {
+      value[i] = ('0' + String(value[i]));
+    }
+  }
+  value = value.join('-');
+  
+  // Create two labels and inputs to allow the user to choose dates.
+	var date_start_label = create_node({ 'type': 'label',
+    'innerHTML': 'From:', 'htmlFor': 'date_start' });
+	var date_start = create_node({ 'type': 'input',
+    'id': 'date_start', 'input_type': 'date', 'value': value });
+  
+  // Get the date for yesterday and format it for the date picker.
+  new_date.setDate(new_date.getDate() + 6);
+	value = [new_date.getFullYear(), (parseInt(new_date.getMonth()) + 1),
+		new_date.getDate()];
+  for (var i = 0; i < value.length; i++) {
+    if (String(value[i]).length === 1) {
+      value[i] = ('0' + String(value[i]));
+    }
+  }
+  value = value.join('-');
+  
+  var date_end_label = create_node({ 'type': 'label',
+    'innerHTML': 'To:', 'htmlFor': 'date_end' });
+	var date_end = create_node({ 'type': 'input',
+    'id': 'date_end', 'input_type': 'date', 'value': value });
+	
+	var temp_btn = create_node({ 'type': 'button',
+    'id': 'submit_sales_tax', 'className': 'display__submit_display-block',
+    'innerHTML': 'Submit' });
+	
+  // Clear the main element and navbar. Add the new elements.
+	var main = document.getElementById('main');
+  main.innerHTML = '';
+  clear_navbar_links();
+  main.appendChild(message);
+	main.appendChild(date_start_label);
+	main.appendChild(date_start);
+	main.appendChild(date_end_label);
+	main.appendChild(date_end);
+	main.appendChild(temp_btn);
+}
+
 function get_set_list() {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function(){
@@ -683,15 +643,28 @@ function get_set_list() {
       create_table_overstock(json_list);
 		}
     // Simulate data if database is unavailable. Used for debugging layout.
-    else {
+    /* else {
       var json_list = [{ 'category': 'Baseball', 'set_year': 1990, 'set_name': 'Topps' },
-      { 'category': 'Baseball', 'set_year': 1991, 'set_name': 'Topps' },
-      { 'category': 'Baseball', 'set_year': 1992, 'set_name': 'Topps' }];
+      { 'category': 'Baseball A', 'set_year': 1991, 'set_name': 'Topps A' },
+      { 'category': 'Baseball B', 'set_year': 1992, 'set_name': 'Topps B' },
+      { 'category': 'Baseball C', 'set_year': 1993, 'set_name': 'Topps C' },
+      { 'category': 'Baseball D', 'set_year': 1994, 'set_name': 'Topps D' },
+      { 'category': 'Baseball E', 'set_year': 1995, 'set_name': 'Topps E' },
+      { 'category': 'Baseball F', 'set_year': 1996, 'set_name': 'Topps F' },
+      { 'category': 'Baseball G', 'set_year': 1997, 'set_name': 'Topps G' },
+      { 'category': 'Baseball H', 'set_year': 1998, 'set_name': 'Topps H' },
+      { 'category': 'Baseball I', 'set_year': 1999, 'set_name': 'Topps I' },
+      { 'category': 'Baseball J', 'set_year': 2000, 'set_name': 'Topps J' },
+      { 'category': 'Baseball K', 'set_year': 2001, 'set_name': 'Topps K' },
+      { 'category': 'Baseball L', 'set_year': 2002, 'set_name': 'Topps L' },
+      { 'category': 'Baseball M', 'set_year': 2003, 'set_name': 'Topps M' },
+      { 'category': 'Baseball N', 'set_year': 2004, 'set_name': 'Topps N' },
+      { 'category': 'Baseball O', 'set_year': 2005, 'set_name': 'Topps O' },];
 			// Display the results.
       var column_names = ['Year', 'Set', 'Location', 'Sales'];
       // Create the tables needed to display the set data.
       create_table_overstock(json_list);
-    }
+    } */
 	}
   xhttp.open('POST', '/master/get_set_list', true);
 	xhttp.setRequestHeader('Content-type', 'application/json');
@@ -728,6 +701,83 @@ function get_set_sales(json, btn_id) {
 	xhttp.open("POST", "/master/get_set_sales", true);
 	xhttp.setRequestHeader("Content-type", "application/json");
 	xhttp.send(JSON.stringify(json));
+}
+
+function set_mode(new_mode) {
+	// Set the mode.
+	mode = new_mode;
+  // Remove any navbar links.
+  clear_navbar_links();
+	// Clear the main element and add the correct buttons.
+	document.getElementById('main').innerHTML = '';
+  if (new_mode === 'overstock' || new_mode === 'sets') {
+    create_buttons_sport();
+  }
+  else if (new_mode === 'inventory') {
+    // Reset the current_record global.
+    current_record = 1;
+    // Create the year buttons.
+    create_buttons_year();
+  }
+  
+  else if (new_mode === 'newly_added') {
+    // Reset the current_record global.
+    current_record = 1;
+  }
+}
+
+function sort_table(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById('table2');
+  switching = true;
+  // Set the sorting direction to ascending:
+  dir = 'asc'; 
+  /* Make a loop that will continue until
+  no switching has been done: */
+  while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    rows = table.getElementsByTagName('tr');
+    // Loop through all table rows :
+    for (i = 0; i < (rows.length - 1); i++) {
+      // Start by saying there should be no switching:
+      shouldSwitch = false;
+      /* Get the two elements you want to compare,
+      one from current row and one from the next: */
+      x = rows[i].getElementsByTagName('td')[n];
+      y = rows[i + 1].getElementsByTagName('td')[n];
+      /* Check if the two rows should switch place,
+      based on the direction, asc or desc: */
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch = true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          // If so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /* If a switch has been marked, make the switch
+      and mark that a switch has been done: */
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      // Each time a switch is done, increase this count by 1:
+      switchcount ++; 
+    } else {
+      /* If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again. */
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
 }
 
 function create_table(parent_node_id, column_names, json_list, json_list_keys) {

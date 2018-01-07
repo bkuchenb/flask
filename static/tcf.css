@@ -98,6 +98,13 @@ header {
     /* text-align: left; */
     z-index: 1;
 	}
+    .display_flex {
+      display: flex;
+    }
+    
+    .display_none {
+      display: none;
+    }
   
     #menu button {
       margin: 0.5em;
@@ -296,21 +303,6 @@ header {
   width: 7em;
 }
 
-/* .main__table-header{
-  border-bottom: 0.0625em solid black;
-  border-left: 0.0625em solid black;
-  border-right: 0.0625em solid black;
-}
-.navbar__ul{
-	margin: 0;
-	padding: 0;
-}
-.navbar_li{
-	display: inline;
-	margin-right: 0.5em;
-	padding: 0;
-}
- */
 table {
 	margin: 0.5em auto;
   margin-bottom: 0;
